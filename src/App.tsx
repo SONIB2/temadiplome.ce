@@ -17,7 +17,7 @@ import FreeMaterials from './pages/FreeMaterials'
 import Admin from './pages/Admin'
 import Universities from './pages/Universities'
 import Portfolio from './pages/Portfolio'
-
+import BackToTopButton from './components/BackToTopButton'
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -43,6 +43,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <BackToTopButton />
       <WhatsAppButton />
     </div>
   )

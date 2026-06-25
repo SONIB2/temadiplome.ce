@@ -6,14 +6,22 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
   }
+
   body {
     @apply bg-white text-zinc-900 font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    overflow-x: hidden;
   }
-  h1, h2, h3, h4 {
+
+  h1,
+  h2,
+  h3,
+  h4 {
     @apply font-serif;
   }
+
   * {
     @apply touch-manipulation;
   }
@@ -23,58 +31,116 @@
   .container-academic {
     @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
+
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-amber-400 text-zinc-900 font-semibold text-sm rounded-xl shadow-sm hover:bg-amber-300 active:scale-95 transition-all duration-200 hover:shadow-md;
   }
+
   .btn-dark {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-zinc-900 text-white font-semibold text-sm rounded-xl shadow-sm hover:bg-zinc-800 active:scale-95 transition-all duration-200;
   }
+
   .btn-outline {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 border-2 border-zinc-900 text-zinc-900 font-semibold text-sm rounded-xl hover:bg-zinc-900 hover:text-white active:scale-95 transition-all duration-200;
   }
+
   .btn-outline-white {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 border-2 border-white text-white font-semibold text-sm rounded-xl hover:bg-white hover:text-zinc-900 active:scale-95 transition-all duration-200;
   }
+
   .btn-whatsapp {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366] text-white font-semibold text-sm rounded-xl shadow-sm hover:bg-green-500 active:scale-95 transition-all duration-200;
   }
+
+  .btn-instagram {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 text-white font-semibold text-sm rounded-xl shadow-sm active:scale-95 transition-all duration-200;
+    background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcaf45 100%);
+  }
+
   .section-label {
     @apply text-amber-600 font-semibold uppercase tracking-widest text-xs;
   }
+
   .section-title {
     @apply text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-zinc-900 leading-tight;
   }
+
   .section-subtitle {
     @apply text-base sm:text-lg text-zinc-500 max-w-2xl;
   }
+
   .card {
     @apply bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-200;
   }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes scrollX {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
-.animate-fade-in    { animation: fadeIn 0.4s ease-out forwards; }
-.animate-scale-in   { animation: scaleIn 0.35s ease-out forwards; }
-.animate-slide-up   { animation: slideUp 0.5s ease-out forwards; }
-.animate-scroll-x   { animation: scrollX 30s linear infinite; }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollX {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.35s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-scroll-x {
+  animation: scrollX 45s linear infinite;
+}
