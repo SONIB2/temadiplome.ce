@@ -1,100 +1,106 @@
-import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { Calendar, ArrowRight, Tag } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Calendar, ArrowRight, Tag } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 interface Post {
-  id: string
-  title: string
-  slug: string
-  excerpt: string
-  image_url: string
-  category: string
-  created_at: string
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  image_url: string;
+  category: string;
+  created_at: string;
 }
 
 const fallbackPosts: Post[] = [
   {
-    id: '1',
-    title: 'Si të zgjedhësh temën e diplomës?',
-    slug: 'si-te-zgjedhesh-temen-e-diplomes',
+    id: "1",
+    title: "Si të zgjedhësh temën e diplomës?",
+    slug: "si-te-zgjedhesh-temen-e-diplomes",
     excerpt:
-      'Zgjedhja e temës është hapi i parë dhe më i rëndësishëm. Tema duhet të jetë e qartë, e realizueshme dhe e lidhur me degën tuaj.',
-    image_url: 'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Diplomë',
-    created_at: '2026-01-10',
+      "Zgjedhja e temës është hapi i parë dhe më i rëndësishëm. Tema duhet të jetë e qartë, e realizueshme dhe e lidhur me degën tuaj.",
+    image_url:
+      "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=800",
+    category: "Diplomë",
+    created_at: "2026-01-10",
   },
   {
-    id: '2',
-    title: 'Si strukturohet një punim diplome?',
-    slug: 'si-strukturohet-nje-punim-diplome',
+    id: "2",
+    title: "Si strukturohet një punim diplome?",
+    slug: "si-strukturohet-nje-punim-diplome",
     excerpt:
-      'Një punim diplome duhet të ketë hyrje, kapitull teorik, metodologji, analizë, konkluzione dhe rekomandime të qarta.',
-    image_url: 'https://images.pexels.com/photos/5905885/pexels-photo-5905885.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Strukturim',
-    created_at: '2026-01-18',
+      "Një punim diplome duhet të ketë hyrje, kapitull teorik, metodologji, analizë, konkluzione dhe rekomandime të qarta.",
+    image_url:
+      "https://images.pexels.com/photos/5905885/pexels-photo-5905885.jpeg?auto=compress&cs=tinysrgb&w=800",
+    category: "Strukturim",
+    created_at: "2026-01-18",
   },
   {
-    id: '3',
-    title: 'Gabimet më të shpeshta në temat e diplomës',
-    slug: 'gabimet-me-te-shpeshta-ne-tema-diplome',
+    id: "3",
+    title: "Gabimet më të shpeshta në temat e diplomës",
+    slug: "gabimet-me-te-shpeshta-ne-tema-diplome",
     excerpt:
-      'Mungesa e referencave, analiza e dobët dhe struktura e paqartë janë disa nga gabimet që duhen shmangur në punimet akademike.',
-    image_url: 'https://images.pexels.com/photos/4778611/pexels-photo-4778611.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Këshilla',
-    created_at: '2026-02-02',
+      "Mungesa e referencave, analiza e dobët dhe struktura e paqartë janë disa nga gabimet që duhen shmangur në punimet akademike.",
+    image_url:
+      "https://images.pexels.com/photos/4778611/pexels-photo-4778611.jpeg?auto=compress&cs=tinysrgb&w=800",
+    category: "Këshilla",
+    created_at: "2026-02-02",
   },
   {
-    id: '4',
-    title: 'Si të përdorësh referencat APA?',
-    slug: 'si-te-perdoresh-referencat-apa',
+    id: "4",
+    title: "Si të përdorësh referencat APA?",
+    slug: "si-te-perdoresh-referencat-apa",
     excerpt:
-      'Referencat APA janë të rëndësishme për korrektësinë akademike. Mësoni si të citoni libra, artikuj dhe burime online.',
-    image_url: 'https://images.pexels.com/photos/159775/library-la-trobe-study-students-159775.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'APA',
-    created_at: '2026-02-15',
+      "Referencat APA janë të rëndësishme për korrektësinë akademike. Mësoni si të citoni libra, artikuj dhe burime online.",
+    image_url:
+      "https://images.pexels.com/photos/159775/library-la-trobe-study-students-159775.jpeg?auto=compress&cs=tinysrgb&w=800",
+    category: "APA",
+    created_at: "2026-02-15",
   },
   {
-    id: '5',
-    title: 'Kur duhet analiza SPSS në një punim?',
-    slug: 'kur-duhet-analiza-spss-ne-punim',
+    id: "5",
+    title: "Kur duhet analiza SPSS në një punim?",
+    slug: "kur-duhet-analiza-spss-ne-punim",
     excerpt:
-      'Nëse punimi ka pyetësor, hipoteza ose të dhëna numerike, analiza SPSS është pjesë kyçe e kapitullit të rezultateve.',
-    image_url: 'https://images.pexels.com/photos/669622/pexels-photo-669622.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'SPSS',
-    created_at: '2026-03-03',
+      "Nëse punimi ka pyetësor, hipoteza ose të dhëna numerike, analiza SPSS është pjesë kyçe e kapitullit të rezultateve.",
+    image_url:
+      "https://images.pexels.com/photos/669622/pexels-photo-669622.jpeg?auto=compress&cs=tinysrgb&w=800",
+    category: "SPSS",
+    created_at: "2026-03-03",
   },
   {
-    id: '6',
-    title: 'Si të përgatitesh për mbrojtjen e diplomës?',
-    slug: 'si-te-pergatitesh-per-mbrojtjen-e-diplomes',
+    id: "6",
+    title: "Si të përgatitesh për mbrojtjen e diplomës?",
+    slug: "si-te-pergatitesh-per-mbrojtjen-e-diplomes",
     excerpt:
-      'Mbrojtja kërkon prezantim të qartë, PowerPoint të mirëstrukturuar dhe përgjigje të sigurta ndaj pyetjeve të komisionit.',
-    image_url: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800',
-    category: 'Prezantim',
-    created_at: '2026-03-20',
+      "Mbrojtja kërkon prezantim të qartë, PowerPoint të mirëstrukturuar dhe përgjigje të sigurta ndaj pyetjeve të komisionit.",
+    image_url:
+      "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800",
+    category: "Prezantim",
+    created_at: "2026-03-20",
   },
-]
+];
 
 export default function Blog() {
-  const [posts, setPosts] = useState<Post[]>(fallbackPosts)
+  const [posts, setPosts] = useState<Post[]>(fallbackPosts);
 
   useEffect(() => {
     supabase
-      .from('blog_posts')
-      .select('id,title,slug,excerpt,image_url,category,created_at')
-      .order('created_at', { ascending: false })
+      .from("blog_posts")
+      .select("id,title,slug,excerpt,image_url,category,created_at")
+      .order("created_at", { ascending: false })
       .then(({ data }) => {
-        if (data && data.length) setPosts(data as Post[])
-      })
-  }, [])
+        if (data && data.length) setPosts(data as Post[]);
+      });
+  }, []);
 
   const fmt = (d: string) =>
-    new Date(d).toLocaleDateString('sq-AL', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    })
+    new Date(d).toLocaleDateString("sq-AL", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
 
   return (
     <div className="pt-24 pb-20">
@@ -102,8 +108,9 @@ export default function Blog() {
         <span className="section-label">Blog</span>
         <h1 className="section-title mt-2 mb-3">Këshilla akademike</h1>
         <p className="section-subtitle mx-auto">
-          Artikuj dhe guida praktike për procesin e punimit të diplomës, detyrave të kursit,
-          referencave, analizës SPSS dhe përgatitjes për mbrojtje.
+          Artikuj dhe guida praktike për procesin e punimit të diplomës,
+          detyrave të kursit, referencave, analizës SPSS dhe përgatitjes për
+          mbrojtje.
         </p>
       </section>
 
@@ -119,7 +126,7 @@ export default function Blog() {
                 <img
                   src={
                     post.image_url ||
-                    'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=800'
+                    "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=800"
                   }
                   alt={post.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -156,5 +163,5 @@ export default function Blog() {
         </div>
       </section>
     </div>
-  )
+  );
 }

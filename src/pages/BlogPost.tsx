@@ -189,21 +189,6 @@ export default function BlogPost() {
               </p>
             ))}
         </div>
-
-        <div className="mt-12 p-6 rounded-3xl bg-zinc-950 text-white">
-          <h2 className="font-serif text-2xl font-bold mb-2">
-            Keni nevojë për asistencë?
-          </h2>
-          <p className="text-zinc-300 text-sm mb-5">
-            Na shkruani për konsultim falas dhe merrni orientim për punimin tuaj akademik.
-          </p>
-          <Link
-            to="/zgjidh-punimin"
-            className="inline-flex items-center gap-2 bg-amber-400 text-zinc-950 px-5 py-3 rounded-xl font-semibold hover:bg-amber-300 transition-colors"
-          >
-            Porosit tani
-          </Link>
-        </div>
       </div>
     </article>
   )

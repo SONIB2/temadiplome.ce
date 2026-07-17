@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   MessageCircle,
@@ -11,128 +11,128 @@ import {
   Star,
   Clock,
   Shield,
-} from 'lucide-react'
-import { SITE_CONFIG } from '../lib/supabase'
+} from "lucide-react";
+import { SITE_CONFIG } from "../lib/supabase";
 
 const services = [
   {
-    title: 'Konsultim Falas',
-    desc: 'Orientim fillestar për temën dhe kërkesat.',
+    title: "Konsultim Falas",
+    desc: "Orientim fillestar për temën dhe kërkesat.",
     icon: MessageCircle,
   },
   {
-    title: 'Strukturim Punimi',
-    desc: 'Ndarje kapitujsh, objektiva dhe metodologji.',
+    title: "Strukturim Punimi",
+    desc: "Ndarje kapitujsh, objektiva dhe metodologji.",
     icon: BookOpen,
   },
   {
-    title: 'Referenca APA',
-    desc: 'Citimet dhe bibliografia sipas stilit APA.',
+    title: "Referenca APA",
+    desc: "Citimet dhe bibliografia sipas stilit APA.",
     icon: FileText,
   },
   {
-    title: 'Analizë SPSS',
-    desc: 'Tabelat, grafikët dhe interpretimi statistikor.',
+    title: "Analizë SPSS",
+    desc: "Tabelat, grafikët dhe interpretimi statistikor.",
     icon: BarChart3,
   },
   {
-    title: 'PowerPoint',
-    desc: 'Slide profesionale dhe të pastra për mbrojtje.',
+    title: "PowerPoint",
+    desc: "Slide profesionale dhe të pastra për mbrojtje.",
     icon: Presentation,
   },
   {
-    title: 'Punime Diplome',
-    desc: 'Bachelor dhe Master me strukturë akademike.',
+    title: "Punime Diplome",
+    desc: "Bachelor dhe Master me strukturë akademike.",
     icon: GraduationCap,
   },
-]
+];
 
 const process = [
   {
-    day: '01',
-    title: 'Zgjidh shërbimin',
-    desc: 'Zgjidh llojin e shërbimit që të nevojitet: diplomë, SPSS, PowerPoint, APA ose detyrë kursi.',
+    day: "01",
+    title: "Zgjidh shërbimin",
+    desc: "Zgjidh llojin e shërbimit që të nevojitet: diplomë, SPSS, PowerPoint, APA ose detyrë kursi.",
     image:
-      'https://images.pexels.com/photos/5905885/pexels-photo-5905885.jpeg?auto=compress&cs=tinysrgb&w=900',
+      "https://images.pexels.com/photos/5905885/pexels-photo-5905885.jpeg?auto=compress&cs=tinysrgb&w=900",
   },
   {
-    day: '02',
-    title: 'Dërgo kërkesën',
-    desc: 'Plotëso formularin me temën, universitetin, afatin dhe detajet e tjera të punimit.',
+    day: "02",
+    title: "Dërgo kërkesën",
+    desc: "Plotëso formularin me temën, universitetin, afatin dhe detajet e tjera të punimit.",
     image:
-      'https://images.pexels.com/photos/4778611/pexels-photo-4778611.jpeg?auto=compress&cs=tinysrgb&w=900',
+      "https://images.pexels.com/photos/4778611/pexels-photo-4778611.jpeg?auto=compress&cs=tinysrgb&w=900",
   },
   {
-    day: '03',
-    title: 'Merr konfirmimin',
-    desc: 'Ne të kontaktojmë në WhatsApp për çmimin, afatin, pagesën dhe hapat e radhës.',
+    day: "03",
+    title: "Merr konfirmimin",
+    desc: "Ne të kontaktojmë në WhatsApp për çmimin, afatin, pagesën dhe hapat e radhës.",
     image:
-      'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=900',
+      "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=900",
   },
-]
+];
 
 function TestimonialsSlider() {
   const testimonials = [
     {
-      name: 'A. Hoxha',
-      university: 'Universiteti i Tiranës',
-      service: 'Diplomë Bachelor',
-      text: 'Më ndihmuan me strukturimin e temës dhe organizimin e kapitujve. Komunikimi ishte shumë korrekt dhe puna u dorëzua në kohë.',
+      name: "A. Hoxha",
+      university: "Universiteti i Tiranës",
+      service: "Diplomë Bachelor",
+      text: "Më ndihmuan me strukturimin e temës dhe organizimin e kapitujve. Komunikimi ishte shumë korrekt dhe puna u dorëzua në kohë.",
     },
     {
-      name: 'E. Berisha',
-      university: 'Prishtinë',
-      service: 'Diplomë Master',
-      text: 'Shërbim shumë profesional. Më pëlqeu që më sqaruan çdo hap dhe më ndihmuan me pjesën teorike dhe formatimin.',
+      name: "E. Berisha",
+      university: "Prishtinë",
+      service: "Diplomë Master",
+      text: "Shërbim shumë profesional. Më pëlqeu që më sqaruan çdo hap dhe më ndihmuan me pjesën teorike dhe formatimin.",
     },
     {
-      name: 'K. Dervishi',
-      university: 'Fakulteti Ekonomik',
-      service: 'Analizë SPSS',
-      text: 'Analiza SPSS ishte e qartë, me tabela, grafikë dhe interpretim të kuptueshëm. Më ndihmoi shumë për kapitullin e rezultateve.',
+      name: "K. Dervishi",
+      university: "Fakulteti Ekonomik",
+      service: "Analizë SPSS",
+      text: "Analiza SPSS ishte e qartë, me tabela, grafikë dhe interpretim të kuptueshëm. Më ndihmoi shumë për kapitullin e rezultateve.",
     },
     {
-      name: 'M. Krasniqi',
-      university: 'Master',
-      service: 'PowerPoint',
-      text: 'Prezantimi ishte shumë estetik dhe i organizuar mirë. Nuk ishte i ngarkuar dhe u përshtat bukur me temën.',
+      name: "M. Krasniqi",
+      university: "Master",
+      service: "PowerPoint",
+      text: "Prezantimi ishte shumë estetik dhe i organizuar mirë. Nuk ishte i ngarkuar dhe u përshtat bukur me temën.",
     },
     {
-      name: 'L. Gashi',
-      university: 'Tiranë',
-      service: 'Referenca APA',
-      text: 'Referencat u rregulluan në format APA dhe dokumenti dukej shumë më profesional. Shërbim i shpejtë dhe korrekt.',
+      name: "L. Gashi",
+      university: "Tiranë",
+      service: "Referenca APA",
+      text: "Referencat u rregulluan në format APA dhe dokumenti dukej shumë më profesional. Shërbim i shpejtë dhe korrekt.",
     },
-  ]
+  ];
 
-  const [active, setActive] = useState(1)
+  const [active, setActive] = useState(1);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActive((prev) => (prev + 1) % testimonials.length)
-    }, 4500)
+      setActive((prev) => (prev + 1) % testimonials.length);
+    }, 4500);
 
-    return () => clearInterval(interval)
-  }, [testimonials.length])
+    return () => clearInterval(interval);
+  }, [testimonials.length]);
 
   const prevSlide = () => {
-    setActive((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-  }
+    setActive((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
 
   const nextSlide = () => {
-    setActive((prev) => (prev + 1) % testimonials.length)
-  }
+    setActive((prev) => (prev + 1) % testimonials.length);
+  };
 
   const getVisibleTestimonials = () => {
-    const previous = (active - 1 + testimonials.length) % testimonials.length
-    const next = (active + 1) % testimonials.length
+    const previous = (active - 1 + testimonials.length) % testimonials.length;
+    const next = (active + 1) % testimonials.length;
 
     return [
-      { ...testimonials[previous], position: 'left' },
-      { ...testimonials[active], position: 'center' },
-      { ...testimonials[next], position: 'right' },
-    ]
-  }
+      { ...testimonials[previous], position: "left" },
+      { ...testimonials[active], position: "center" },
+      { ...testimonials[next], position: "right" },
+    ];
+  };
 
   return (
     <div className="relative z-10">
@@ -156,15 +156,15 @@ function TestimonialsSlider() {
 
         <div className="flex items-stretch justify-center gap-5 px-4 sm:px-8">
           {getVisibleTestimonials().map((item) => {
-            const isCenter = item.position === 'center'
+            const isCenter = item.position === "center";
 
             return (
               <div
                 key={`${item.name}-${item.position}`}
                 className={`rounded-2xl border p-5 sm:p-6 transition-all duration-500 ${
                   isCenter
-                    ? 'w-full max-w-[460px] bg-white/10 border-amber-400/30 shadow-2xl shadow-amber-400/10 scale-100 opacity-100'
-                    : 'hidden md:block w-[320px] bg-white/[0.04] border-white/10 opacity-45 scale-95'
+                    ? "w-full max-w-[460px] bg-white/10 border-amber-400/30 shadow-2xl shadow-amber-400/10 scale-100 opacity-100"
+                    : "hidden md:block w-[320px] bg-white/[0.04] border-white/10 opacity-45 scale-95"
                 }`}
               >
                 <p className="text-sm sm:text-base text-zinc-200 leading-relaxed mb-6">
@@ -197,7 +197,7 @@ function TestimonialsSlider() {
                   </div>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       </div>
@@ -220,12 +220,15 @@ function TestimonialsSlider() {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 export default function Home() {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const orderPath = isLoggedIn ? "/zgjidh-punimin" : "/auth";
+
   const whatsappMessage =
-    'Përshëndetje! Dua të interesohem për një shërbim akademik.'
+    "Përshëndetje! Dua të interesohem për një shërbim akademik.";
 
   return (
     <main className="bg-white overflow-hidden">
@@ -264,10 +267,7 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                <Link
-                  to="/zgjidh-punimin"
-                  className="btn-primary w-full sm:w-auto"
-                >
+                <Link to={orderPath} className="btn-primary w-full sm:w-auto">
                   Porosit tani <ArrowRight className="w-4 h-4" />
                 </Link>
 
@@ -282,6 +282,13 @@ export default function Home() {
                   <MessageCircle className="w-4 h-4" /> Konsultim falas
                 </a>
               </div>
+
+              {!isLoggedIn && (
+                <p className="text-xs text-zinc-400 mt-4">
+                  Për të bërë porosi duhet të hyni në llogari ose të
+                  regjistroheni.
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -302,10 +309,10 @@ export default function Home() {
 
             <div className="grid sm:grid-cols-2 gap-4 mb-8">
               {[
-                { icon: Clock, label: 'Përgjigje brenda 1 ore' },
-                { icon: Shield, label: '100% konfidencial' },
+                { icon: Clock, label: "Përgjigje brenda 1 ore" },
+                { icon: Shield, label: "100% konfidencial" },
               ].map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
 
                 return (
                   <div key={item.label} className="flex items-center gap-3">
@@ -316,7 +323,7 @@ export default function Home() {
                       {item.label}
                     </p>
                   </div>
-                )
+                );
               })}
             </div>
 
@@ -341,28 +348,38 @@ export default function Home() {
           />
 
           <div className="relative z-10 bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-xl w-full max-w-xl mx-auto">
-            <h3 className="font-serif text-3xl font-bold text-zinc-950 mb-6">
+            <h3 className="font-serif text-3xl font-bold text-zinc-950 mb-3">
               Kërko shërbimin tënd
             </h3>
+
+            <p className="text-sm text-zinc-500 mb-6">
+              Për të dërguar një kërkesë zyrtare, duhet të jeni të loguar në
+              llogarinë tuaj.
+            </p>
 
             <form
               className="space-y-3"
               onSubmit={(e) => {
-                e.preventDefault()
+                e.preventDefault();
 
-                const form = e.currentTarget
-                const formData = new FormData(form)
+                if (!isLoggedIn) {
+                  window.location.href = "/auth";
+                  return;
+                }
 
-                const name = formData.get('name')
-                const whatsapp = formData.get('whatsapp')
-                const service = formData.get('service')
+                const form = e.currentTarget;
+                const formData = new FormData(form);
 
-                const message = `Përshëndetje! Dua të kërkoj një shërbim akademik.%0A%0AEmri: ${name}%0AWhatsApp: ${whatsapp}%0AShërbimi: ${service}`
+                const name = formData.get("name");
+                const whatsapp = formData.get("whatsapp");
+                const service = formData.get("service");
+
+                const message = `Përshëndetje! Dua të kërkoj një shërbim akademik.%0A%0AEmri: ${name}%0AWhatsApp: ${whatsapp}%0AShërbimi: ${service}`;
 
                 window.open(
                   `https://wa.me/${SITE_CONFIG.whatsapp}?text=${message}`,
-                  '_blank'
-                )
+                  "_blank"
+                );
               }}
             >
               <input
@@ -406,7 +423,8 @@ export default function Home() {
                 type="submit"
                 className="w-full inline-flex items-center justify-center gap-2 bg-amber-400 text-zinc-950 px-6 py-3.5 rounded-xl font-semibold hover:bg-amber-300 transition-colors"
               >
-                Plotëso kërkesën <ArrowRight className="w-4 h-4" />
+                {isLoggedIn ? "Plotëso kërkesën" : "Hyr për të vazhduar"}
+                <ArrowRight className="w-4 h-4" />
               </button>
             </form>
           </div>
@@ -429,7 +447,7 @@ export default function Home() {
           <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
             <div className="flex w-max gap-5 animate-scroll-x px-4">
               {[...services, ...services].map((service, index) => {
-                const Icon = service.icon
+                const Icon = service.icon;
 
                 return (
                   <Link
@@ -449,7 +467,7 @@ export default function Home() {
                       {service.desc}
                     </p>
                   </Link>
-                )
+                );
               })}
             </div>
           </div>
@@ -536,5 +554,5 @@ export default function Home() {
         </div>
       </section>
     </main>
-  )
+  );
 }
