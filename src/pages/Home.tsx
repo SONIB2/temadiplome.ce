@@ -1,23 +1,18 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   ArrowRight,
   BarChart3,
   BookOpen,
   CheckCircle2,
   FileText,
   GraduationCap,
-  Instagram,
   Lock,
   Mail,
   MessageCircle,
-  Phone,
   Presentation,
-  Quote,
   Send,
   Star,
-  UserRound,
 } from "lucide-react";
 import { SITE_CONFIG } from "../lib/supabase";
 
@@ -50,26 +45,10 @@ const services = [
 ];
 
 const stats = [
-  {
-    value: "500+",
-    label: "punime të realizuara",
-    icon: GraduationCap,
-  },
-  {
-    value: "4.9/5",
-    label: "vlerësim mesatar",
-    icon: Star,
-  },
-  {
-    value: "98%",
-    label: "studentë të kënaqur",
-    icon: CheckCircle2,
-  },
-  {
-    value: "100%",
-    label: "konfidencialitet",
-    icon: Lock,
-  },
+  { value: "500+", label: "punime të realizuara", icon: GraduationCap },
+  { value: "4.9/5", label: "vlerësim mesatar", icon: Star },
+  { value: "98%", label: "studentë të kënaqur", icon: CheckCircle2 },
+  { value: "100%", label: "konfidencialitet", icon: Lock },
 ];
 
 const steps = [
@@ -150,12 +129,8 @@ export default function Home() {
     <main className="overflow-hidden bg-white text-zinc-950">
       <style>{`
         @keyframes reviewMarquee {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
         }
 
         .review-marquee {
@@ -166,46 +141,53 @@ export default function Home() {
           animation-play-state: paused;
         }
 
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
         @media (prefers-reduced-motion: reduce) {
-          .review-marquee {
-            animation: none;
-          }
+          .review-marquee { animation: none; }
         }
       `}</style>
 
       {/* HERO */}
-      <section className="relative pt-20 pb-4 lg:pt-24 lg:pb-6">
-        <div className="relative mx-auto max-w-[1440px] px-5 lg:px-10">
-          <div className="relative overflow-hidden rounded-b-[28px] pb-1">            <div className="absolute inset-0">
+      <section className="relative pb-3 pt-20 lg:pb-5 lg:pt-24">
+        <div className="relative mx-auto max-w-[1440px] px-4 sm:px-5 lg:px-10">
+          <div className="relative overflow-hidden rounded-[24px] lg:rounded-[28px]">
+            <div className="absolute inset-0">
               <img
                 src="/images/home/hero-graduate.jpg"
-                alt="Studente në ceremoninë e diplomimit"
-                className="h-full w-full object-cover object-center brightness-[0.92] contrast-[1.08] saturate-[1.08]"
+                alt="Studentë në ceremoninë e diplomimit"
+                className="h-full w-full object-cover object-[55%_center] brightness-[0.94] contrast-[1.05] saturate-[1.05] sm:object-center"
               />
-
-              <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent" />
-<div className="absolute inset-0 bg-gradient-to-t from-white/35 via-transparent to-white/5" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/55 via-white/30 to-white/5 lg:bg-gradient-to-r lg:from-white/95 lg:via-white/58 lg:to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-white/5" />
             </div>
 
-            <div className="relative grid min-h-[570px] items-center gap-10 px-6 py-12 sm:px-10 lg:grid-cols-[0.9fr_1.1fr] lg:px-16">
-              <div className="max-w-xl">
-                <p className="mb-5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-700">
-                  <span className="h-px w-6 bg-violet-600" />
+            <div className="relative grid min-h-[500px] items-center gap-8 px-5 pb-8 pt-8 sm:px-8 sm:py-10 lg:min-h-[570px] lg:grid-cols-[0.9fr_1.1fr] lg:px-14 xl:px-16">
+              <div className="max-w-xl text-center lg:text-left">
+                <p className="mb-3 flex items-center justify-center gap-2 text-[9px] font-bold uppercase tracking-[0.18em] text-violet-700 sm:text-[11px] lg:justify-start">
+                  <span className="h-px w-5 bg-violet-600" />
                   Asistencë akademike profesionale
                 </p>
 
-                <h1 className="max-w-[620px] font-serif text-4xl font-bold leading-[1.08] tracking-tight text-zinc-950 sm:text-5xl lg:text-6xl">
+                <h1 className="font-serif text-[34px] font-bold leading-[1.08] tracking-tight text-zinc-950 sm:text-5xl lg:max-w-[620px] lg:text-6xl">
                   Asistencë akademike për një punim{" "}
                   <span className="text-violet-700">më të mirë.</span>
                 </h1>
 
-                <p className="mt-6 max-w-lg text-sm leading-7 text-zinc-600 sm:text-base">
-                  Nga struktura e temës, referencat APA dhe analiza SPSS, deri te
-                  PowerPoint-i për mbrojtje. Proces i qartë, komunikim i shpejtë
-                  dhe konfidencialitet.
+                <p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-zinc-600 sm:mt-5 sm:text-base sm:leading-7 lg:mx-0">
+                  Nga struktura e temës, referencat APA dhe analiza SPSS, deri
+                  te PowerPoint-i për mbrojtje. Proces i qartë, komunikim i
+                  shpejtë dhe konfidencialitet.
                 </p>
 
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <div className="mt-5 flex flex-col gap-2.5 sm:mt-6 sm:flex-row sm:justify-center lg:justify-start">
                   <Link
                     to={orderPath}
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5"
@@ -216,7 +198,7 @@ export default function Home() {
 
                   <a
                     href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
-                      whatsappMessage
+                      whatsappMessage,
                     )}`}
                     target="_blank"
                     rel="noreferrer"
@@ -228,140 +210,123 @@ export default function Home() {
                 </div>
               </div>
 
-            {/* Desktop login card */}
-<div className="hidden justify-end lg:flex">
-  <div className="w-full max-w-[390px] rounded-[24px] border border-white/80 bg-white/82 p-6 shadow-2xl shadow-zinc-900/15 backdrop-blur-xl">
-    <h2 className="font-serif text-2xl font-bold text-zinc-950">
-      Login
-    </h2>
+              {/* Desktop login card */}
+              <div className="hidden justify-end lg:flex">
+                <div className="w-full max-w-[390px] rounded-[24px] border border-white/80 bg-white/82 p-6 shadow-2xl shadow-zinc-900/15 backdrop-blur-xl">
+                  <h2 className="font-serif text-2xl font-bold text-zinc-950">
+                    Login
+                  </h2>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Hyr në llogarinë tënde për të vazhduar me porosinë.
+                  </p>
 
-    <p className="mt-1 text-sm text-zinc-500">
-      Hyr në llogarinë tënde për të vazhduar me porosinë.
-    </p>
+                  <div className="mt-5 space-y-3">
+                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
+                      <Mail className="h-4 w-4 shrink-0 text-violet-600" />
+                      <input
+                        type="email"
+                        placeholder="Email"
+                        className="w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
+                      />
+                    </div>
 
-    <div className="mt-5 space-y-3">
-      <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
-        <Mail className="h-4 w-4 shrink-0 text-violet-600" />
+                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
+                      <Lock className="h-4 w-4 shrink-0 text-violet-600" />
+                      <input
+                        type="password"
+                        placeholder="Password"
+                        className="w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
+                      />
+                    </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
-        />
-      </div>
+                    <Link
+                      to="/auth"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200/50 transition hover:-translate-y-0.5"
+                    >
+                      Hyr
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
 
-      <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
-        <Lock className="h-4 w-4 shrink-0 text-violet-600" />
+                  <div className="my-5 flex items-center gap-3">
+                    <div className="h-px flex-1 bg-zinc-200" />
+                    <span className="text-[11px] text-zinc-400">ose</span>
+                    <div className="h-px flex-1 bg-zinc-200" />
+                  </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
-        />
-      </div>
+                  <p className="text-center text-sm text-zinc-500">
+                    Nuk ke ende një llogari?
+                  </p>
+                  <Link
+                    to="/auth"
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white px-5 py-3.5 text-sm font-bold text-violet-700 transition hover:bg-violet-50"
+                  >
+                    Regjistrohu
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
 
-      <Link
-        to="/auth"
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200/50 transition hover:-translate-y-0.5"
-      >
-        Hyr
-        <ArrowRight className="h-4 w-4" />
-      </Link>
-    </div>
-
-    <div className="my-5 flex items-center gap-3">
-      <div className="h-px flex-1 bg-zinc-200" />
-
-      <span className="text-[11px] text-zinc-400">
-        ose
-      </span>
-
-      <div className="h-px flex-1 bg-zinc-200" />
-    </div>
-
-    <p className="text-center text-sm text-zinc-500">
-      Nuk ke ende një llogari?
-    </p>
-
-    <Link
-      to="/auth"
-      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white px-5 py-3.5 text-sm font-bold text-violet-700 transition hover:bg-violet-50"
-    >
-      Regjistrohu
-      <ArrowRight className="h-4 w-4" />
-    </Link>
-  </div>
-</div>
-</div>
-
-           {/* STATS */}
-<div className="relative z-10 mx-4 -mt-1 mb-4 grid grid-cols-2 overflow-hidden rounded-[22px] border border-white/80 bg-white/95 shadow-xl shadow-zinc-900/10 backdrop-blur-md lg:mx-12 lg:mb-5 lg:grid-cols-4">
-  {stats.map((item, index) => {
-    const Icon = item.icon;
-
-    return (
-      <div
-        key={item.label}
-        className={`flex min-h-[86px] items-center gap-3 px-4 py-4 sm:px-6 ${
-          index % 2 === 0 ? "border-r border-zinc-100" : ""
-        } ${
-          index < 2 ? "border-b border-zinc-100 lg:border-b-0" : ""
-        } ${
-          index > 0 ? "lg:border-l lg:border-zinc-100" : ""
-        }`}
-      >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-700">
-          <Icon className="h-5 w-5" />
-        </div>
-
-        <div className="min-w-0">
-          <p className="text-lg font-bold leading-none text-zinc-950">
-            {item.value}
-          </p>
-
-          <p className="mt-1 text-[11px] leading-4 text-zinc-500">
-            {item.label}
-          </p>
-        </div>
-      </div>
-    );
-  })}
-</div>
+            {/* STATS */}
+            <div className="relative z-10 mx-3 mb-3 grid grid-cols-2 overflow-hidden rounded-[20px] border border-white/80 bg-white/95 shadow-xl shadow-zinc-900/10 backdrop-blur-md sm:mx-5 lg:mx-10 lg:grid-cols-4">
+              {stats.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.label}
+                    className={`flex min-h-[72px] items-center gap-2.5 px-3 py-3 sm:min-h-[82px] sm:px-5 ${
+                      index % 2 === 0 ? "border-r border-zinc-100" : ""
+                    } ${
+                      index < 2 ? "border-b border-zinc-100 lg:border-b-0" : ""
+                    } ${index > 0 ? "lg:border-l lg:border-zinc-100" : ""}`}
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-700 sm:h-10 sm:w-10">
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-base font-bold leading-none text-zinc-950 sm:text-lg">
+                        {item.value}
+                      </p>
+                      <p className="mt-1 text-[9px] leading-3 text-zinc-500 sm:text-[11px] sm:leading-4">
+                        {item.label}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
       {/* SERVICES */}
-      <section className="py-6 lg:py-8">
-        <div className="mx-auto max-w-[1380px] px-5 lg:px-10">
+      <section className="py-5 lg:py-7">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-5 lg:px-10">
           <div className="text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600">
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-violet-600 sm:text-[10px]">
               Shërbimet tona
             </p>
-
-            <h2 className="mt-2 font-serif text-3xl font-bold">
+            <h2 className="mt-1.5 font-serif text-2xl font-bold sm:text-3xl">
               Çfarë ofrojmë
             </h2>
           </div>
 
-          <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-5">
+          <div className="scrollbar-hide mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5 lg:gap-5">
             {services.map((service) => {
               const Icon = service.icon;
-
               return (
                 <article
                   key={service.title}
-                  className="group rounded-[20px] border border-zinc-100 bg-white p-4 text-center shadow-[0_10px_35px_rgba(24,24,27,0.05)] transition hover:-translate-y-1 hover:border-violet-200 sm:p-6"
+                  className="group min-w-[145px] snap-start rounded-[18px] border border-zinc-100 bg-white px-3 py-4 text-center shadow-[0_8px_24px_rgba(24,24,27,0.05)] transition hover:-translate-y-1 hover:border-violet-200 sm:min-w-0 sm:px-4 sm:py-5"
                 >
-                  <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-violet-50 text-violet-700 transition group-hover:bg-violet-100">
-                    <Icon className="h-5 w-5" />
+                  <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-violet-50 text-violet-700 sm:h-10 sm:w-10">
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
-
-                  <h3 className="mt-4 text-sm font-bold text-zinc-950">
+                  <h3 className="mt-2.5 text-[12px] font-bold text-zinc-950 sm:text-[13px]">
                     {service.title}
                   </h3>
-
-                  <p className="mt-2 hidden text-xs leading-5 text-zinc-500 sm:block">
+                  <p className="mt-1.5 hidden text-[11px] leading-4 text-zinc-500 sm:block">
                     {service.description}
                   </p>
                 </article>
@@ -369,10 +334,10 @@ export default function Home() {
             })}
           </div>
 
-          <div className="mt-6 text-center">
+          <div className="mt-4 text-center sm:mt-6">
             <Link
               to="/sherbimet"
-              className="inline-flex items-center gap-2 rounded-xl border border-violet-200 px-6 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-violet-200 px-5 py-2.5 text-xs font-semibold text-violet-700 transition hover:bg-violet-50 sm:px-6 sm:py-3 sm:text-sm"
             >
               Shiko të gjitha shërbimet
               <ArrowRight className="h-4 w-4" />
@@ -382,43 +347,37 @@ export default function Home() {
       </section>
 
       {/* CONSULTATION */}
-      <section className="px-5 pt-4 pb-5 lg:px-10 lg:pt-5 lg:pb-6">
-        <div className="relative mx-auto grid max-w-[1340px] overflow-hidden rounded-[24px] bg-[#0d0920] lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="relative min-h-[270px] overflow-hidden p-7 sm:p-10">
+      <section className="px-4 py-4 sm:px-5 lg:px-10 lg:py-6">
+        <div className="relative mx-auto grid max-w-[1440px] overflow-hidden rounded-[24px] bg-[#0d0920] lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="relative min-h-[235px] overflow-hidden p-6 sm:min-h-[270px] sm:p-9">
             <img
               src="/images/home/consultation-laptop.jpg"
               alt="Konsultim akademik online"
               className="absolute inset-0 h-full w-full object-cover"
             />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-[#100928]/84 to-[#100928]" />
 
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-[#100928]/85 to-[#100928]" />
-
-            <div className="relative max-w-md text-white">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-300">
+            <div className="relative mx-auto max-w-md text-center text-white lg:mx-0 lg:text-left">
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-violet-300 sm:text-[10px]">
                 Konsultim falas
               </p>
-
-              <h2 className="mt-3 font-serif text-3xl font-bold">
+              <h2 className="mt-2 font-serif text-2xl font-bold sm:mt-3 sm:text-3xl">
                 Konsultim falas para porosisë
               </h2>
-
-              <p className="mt-4 text-sm leading-6 text-zinc-300">
+              <p className="mt-3 text-sm leading-6 text-zinc-300 sm:mt-4">
                 Na shkruani për temën, afatin, strukturën dhe dokumentet që ju
                 nevojiten. Përgjigjemi gjatë orarit të punës.
               </p>
-
-              <div className="mt-6 flex flex-wrap gap-4 text-xs text-zinc-300">
-                <span className="flex items-center gap-2">
+              <div className="mt-4 flex flex-wrap justify-center gap-3 text-[11px] text-zinc-300 sm:mt-5 sm:gap-4 sm:text-xs lg:justify-start">
+                <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="h-4 w-4 text-violet-400" />
                   Përgjigje e shpejtë
                 </span>
-
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5">
                   <MessageCircle className="h-4 w-4 text-violet-400" />
                   WhatsApp
                 </span>
-
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5">
                   <Lock className="h-4 w-4 text-violet-400" />
                   Konfidencialitet
                 </span>
@@ -426,157 +385,138 @@ export default function Home() {
             </div>
           </div>
 
-       <div className="flex items-center p-5 sm:p-7 lg:p-8">
-  <div className="w-full rounded-[18px] border border-white/10 bg-white/[0.05] p-6 text-center backdrop-blur">
-    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-300">
-      Konsultim në WhatsApp
-    </p>
-
-    <h3 className="mt-3 font-serif text-2xl font-bold text-white">
-      Na dërgo një mesazh
-    </h3>
-
-    <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-300">
-      Na shkruaj temën, afatin dhe shërbimin që të nevojitet. Do të të
-      përgjigjemi me informacionin dhe hapat e radhës.
-    </p>
-
-    <a
-      href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
-        "Përshëndetje! Dëshiroj një konsultim falas. Tema/shërbimi që më nevojitet është:"
-      )}`}
-      target="_blank"
-      rel="noreferrer"
-      className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-5 py-4 text-sm font-bold text-white shadow-lg shadow-violet-950/30 transition hover:-translate-y-0.5"
-    >
-      <MessageCircle className="h-5 w-5" />
-      Shkruaj në WhatsApp
-      <ArrowRight className="h-4 w-4" />
-    </a>
-
-    <p className="mt-3 text-[10px] text-zinc-500">
-      Hapet direkt biseda në WhatsApp
-    </p>
-  </div>
-</div>
+          <div className="flex items-center p-4 sm:p-6 lg:p-8">
+            <div className="w-full rounded-[18px] border border-white/10 bg-white/[0.05] p-5 text-center backdrop-blur sm:p-6">
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-violet-300 sm:text-[10px]">
+                Konsultim në WhatsApp
+              </p>
+              <h3 className="mt-2 font-serif text-xl font-bold text-white sm:mt-3 sm:text-2xl">
+                Na dërgo një mesazh
+              </h3>
+              <p className="mx-auto mt-2.5 max-w-md text-xs leading-5 text-zinc-300 sm:mt-3 sm:text-sm sm:leading-6">
+                Na shkruaj temën, afatin dhe shërbimin që të nevojitet. Do të të
+                përgjigjemi me informacionin dhe hapat e radhës.
+              </p>
+              <a
+                href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
+                  "Përshëndetje! Dëshiroj një konsultim falas. Tema/shërbimi që më nevojitet është:",
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-950/30 transition hover:-translate-y-0.5 sm:mt-6 sm:py-4"
+              >
+                <MessageCircle className="h-5 w-5" />
+                Shkruaj në WhatsApp
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
           </div>
+        </div>
       </section>
 
-     {/* PROCESS */}
-<section className="px-5 py-5 lg:px-10 lg:py-7">
-  <div className="mx-auto max-w-[1440px] rounded-[24px] border border-violet-100 bg-gradient-to-br from-violet-50/70 via-white to-zinc-50 px-5 py-8 shadow-[0_18px_50px_rgba(76,29,149,0.08)] sm:px-8 lg:px-10">
-    <div className="text-center">
-      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600">
-        Si funksionon
-      </p>
-
-      <h2 className="mt-2 font-serif text-2xl font-bold text-zinc-950 sm:text-3xl lg:text-4xl">
-        Procesi i thjeshtë në 3 hapa
-      </h2>
-    </div>
-
-    <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6">
-      {steps.map((step, index) => {
-        const Icon = step.icon;
-
-        return (
-          <article
-            key={step.number}
-            className="relative min-h-[190px] rounded-[20px] border border-violet-100 bg-white px-5 py-6 text-center shadow-[0_10px_30px_rgba(24,24,27,0.05)] transition hover:-translate-y-1 hover:border-violet-200"
-          >
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-violet-50 text-sm font-bold text-violet-700">
-              {step.number}
-            </div>
-
-            <div className="mx-auto -mt-2 flex h-8 w-8 items-center justify-center rounded-full bg-violet-700 text-white shadow-md">
-              <Icon className="h-4 w-4" />
-            </div>
-
-            <h3 className="mt-4 font-serif text-lg font-bold text-zinc-950">
-              {step.title}
-            </h3>
-
-            <p className="mx-auto mt-2 max-w-[320px] text-xs leading-5 text-zinc-500">
-              {step.description}
+      {/* PROCESS */}
+      <section className="px-4 py-4 sm:px-5 lg:px-10 lg:py-6">
+        <div className="mx-auto max-w-[1440px] rounded-[22px] border border-violet-100 bg-gradient-to-br from-violet-50/60 via-white to-zinc-50 px-4 py-5 shadow-[0_14px_40px_rgba(76,29,149,0.07)] sm:px-8 sm:py-7 lg:px-10">
+          <div className="text-center">
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-violet-600 sm:text-[10px]">
+              Si funksionon
             </p>
+            <h2 className="mt-1.5 font-serif text-xl font-bold text-zinc-950 sm:text-3xl">
+              Procesi i thjeshtë në 3 hapa
+            </h2>
+          </div>
 
-            {index < steps.length - 1 && (
-              <ArrowRight className="absolute -right-4 top-1/2 hidden h-5 w-5 -translate-y-1/2 text-violet-300 md:block" />
-            )}
-          </article>
-        );
-      })}
-    </div>
-  </div>
-</section>
-
-{/* TESTIMONIALS */}
-<section className="px-5 py-5 lg:px-10 lg:py-7">
-  <div className="relative mx-auto max-w-[1440px] overflow-hidden rounded-[24px] bg-[#17100f] py-9">
-    <img
-      src="/images/home/testimonials-background.jpg"
-      alt="Studentë duke bashkëpunuar"
-      className="absolute inset-0 h-full w-full object-cover object-center opacity-80 brightness-[0.82] contrast-[1.05] saturate-[1.05]"
-    />
-
-    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-black/60" />
-    <div className="absolute inset-0 bg-violet-950/10" />
-
-    <div className="relative">
-      <p className="mb-5 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-violet-200">
-        Studentët tanë
-      </p>
-
-      <div className="overflow-hidden">
-        <div className="review-marquee flex w-max gap-4 px-4">
-          {[...reviews, ...reviews].map((review, index) => (
-            <article
-              key={`${review.name}-${index}`}
-              className="flex w-[285px] shrink-0 items-center gap-4 rounded-[18px] border border-white/25 bg-black/40 p-4 shadow-2xl shadow-black/20 backdrop-blur-md sm:w-[330px]"
-            >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-violet-300 text-sm font-bold text-violet-900">
-                {review.avatar}
-              </div>
-
-              <div className="min-w-0">
-                <p className="line-clamp-2 text-sm font-medium text-white">
-                  {review.text}
-                </p>
-
-                <div className="mt-3 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-bold text-white">
-                      {review.name}
-                    </p>
-
-                    <p className="text-[10px] text-zinc-300">
-                      {review.study}
-                    </p>
+          <div className="scrollbar-hide mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible md:gap-5">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <article
+                  key={step.number}
+                  className="relative min-w-[82%] snap-center rounded-[18px] border border-violet-100 bg-white px-4 py-4 text-center shadow-[0_8px_24px_rgba(24,24,27,0.05)] sm:min-w-[55%] sm:px-5 sm:py-5 md:min-w-0"
+                >
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-violet-50 text-xs font-bold text-violet-700">
+                    {step.number}
                   </div>
-
-                  <div className="flex text-amber-400">
-                    {Array.from({ length: 5 }).map((_, starIndex) => (
-                      <Star
-                        key={starIndex}
-                        className="h-3.5 w-3.5 fill-current"
-                      />
-                    ))}
+                  <div className="mx-auto -mt-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-violet-700 text-white">
+                    <Icon className="h-3.5 w-3.5" />
                   </div>
-                </div>
-              </div>
-            </article>
-          ))}
+                  <h3 className="mt-3 font-serif text-base font-bold text-zinc-950">
+                    {step.title}
+                  </h3>
+                  <p className="mx-auto mt-1.5 max-w-[280px] text-[11px] leading-4 text-zinc-500">
+                    {step.description}
+                  </p>
+                  {index < steps.length - 1 && (
+                    <ArrowRight className="absolute -right-4 top-1/2 hidden h-5 w-5 -translate-y-1/2 text-violet-300 md:block" />
+                  )}
+                </article>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="px-4 py-4 sm:px-5 lg:px-10 lg:py-6">
+        <div className="relative mx-auto max-w-[1440px] overflow-hidden rounded-[24px] bg-[#17100f] py-7 sm:py-9">
+          <img
+            src="/images/home/testimonials-background.jpg"
+            alt="Studentë duke bashkëpunuar"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-80 brightness-[0.82] contrast-[1.05] saturate-[1.05]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-black/60" />
+          <div className="absolute inset-0 bg-violet-950/10" />
+
+          <div className="relative">
+            <p className="mb-4 text-center text-[9px] font-bold uppercase tracking-[0.2em] text-violet-200 sm:mb-5 sm:text-[10px]">
+              Studentët tanë
+            </p>
+            <div className="overflow-hidden">
+              <div className="review-marquee flex w-max gap-3 px-3 sm:gap-4 sm:px-4">
+                {[...reviews, ...reviews].map((review, index) => (
+                  <article
+                    key={`${review.name}-${index}`}
+                    className="flex w-[255px] shrink-0 items-center gap-3 rounded-[16px] border border-white/25 bg-black/40 p-3.5 shadow-2xl shadow-black/20 backdrop-blur-md sm:w-[330px] sm:gap-4 sm:rounded-[18px] sm:p-4"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-violet-300 text-xs font-bold text-violet-900 sm:h-12 sm:w-12 sm:text-sm">
+                      {review.avatar}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="line-clamp-2 text-xs font-medium text-white sm:text-sm">
+                        {review.text}
+                      </p>
+                      <div className="mt-2.5 flex items-center justify-between gap-3 sm:mt-3">
+                        <div>
+                          <p className="text-[11px] font-bold text-white sm:text-xs">
+                            {review.name}
+                          </p>
+                          <p className="text-[9px] text-zinc-300 sm:text-[10px]">
+                            {review.study}
+                          </p>
+                        </div>
+                        <div className="flex text-amber-400">
+                          {Array.from({ length: 5 }).map((_, starIndex) => (
+                            <Star
+                              key={starIndex}
+                              className="h-3 w-3 fill-current sm:h-3.5 sm:w-3.5"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* MOBILE STICKY ACTIONS */}
       <div className="fixed bottom-3 left-3 right-3 z-40 grid grid-cols-2 gap-2 rounded-2xl border border-white/60 bg-zinc-950/95 p-2 shadow-2xl backdrop-blur lg:hidden">
         <a
           href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
-            whatsappMessage
+            whatsappMessage,
           )}`}
           target="_blank"
           rel="noreferrer"
@@ -585,7 +525,6 @@ export default function Home() {
           <MessageCircle className="h-4 w-4" />
           WhatsApp
         </a>
-
         <Link
           to={orderPath}
           className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-3 py-3 text-xs font-bold text-white"
