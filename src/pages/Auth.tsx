@@ -68,7 +68,7 @@ export default function Auth() {
     `${formData.first_name.trim()} ${formData.last_name.trim()}`.trim();
 
   const inputClass =
-    "w-full border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400";
+    "w-full rounded-xl border border-zinc-200 bg-white px-4 py-3.5 text-zinc-900 placeholder:text-zinc-400 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100";
 
   const errorInputClass =
     "border-red-300 focus:border-red-400 focus:ring-red-100";
@@ -324,26 +324,38 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-6 py-16">
-      <div className="max-w-6xl w-full grid lg:grid-cols-2 bg-white rounded-3xl shadow-xl overflow-hidden">
-        <div className="bg-zinc-950 text-white p-8 sm:p-10 lg:p-12 flex flex-col justify-between">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.10),transparent_30%),#fafafa] px-5 pb-10 pt-24 lg:px-10 lg:pb-14 lg:pt-28">  <div className="mx-auto grid w-full max-w-[1440px] overflow-hidden rounded-[28px] border border-zinc-100 bg-white shadow-[0_28px_80px_rgba(24,24,27,0.12)] lg:grid-cols-[0.9fr_1.1fr]">  <div className="relative hidden min-h-[640px] overflow-hidden p-10 text-white lg:flex lg:flex-col lg:justify-between lg:p-12">
+          <img
+            src="/images/home/testimonials-background.jpg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover brightness-[0.42] saturate-[0.85]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#090714]/95 via-[#160d2d]/90 to-violet-950/85" />
+          <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-violet-600/30 blur-3xl" />
+          <div className="relative flex h-full flex-col justify-between">
           <div>
-            <p className="text-amber-400 text-xs font-bold uppercase tracking-[0.25em] mb-5">
-              temadiplome.ce
+            <img
+              src="/images/home/logo2.png"
+              alt="temadiplome.ce"
+              className="mb-10 h-11 w-auto object-contain"
+            />
+
+            <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.24em] text-violet-300">
+              Platforma juaj akademike
             </p>
 
-            <h1 className="font-serif text-4xl sm:text-5xl font-bold leading-tight mb-5">
+            <h1 className="mb-5 max-w-md font-serif text-4xl font-bold leading-[1.08] sm:text-5xl">
               Hyr ose krijo llogarinë tënde.
             </h1>
 
-            <p className="text-zinc-300 leading-relaxed mb-8">
+            <p className="mb-9 max-w-md text-sm leading-7 text-zinc-300 sm:text-base">
               Për të bërë porosi, për të ndjekur statusin e punimit dhe për të
               pasur dashboard-in personal, duhet të identifikoheni në platformë.
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-4 sm:space-y-5">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-400 text-zinc-950 flex items-center justify-center flex-shrink-0">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-violet-300/30 bg-violet-500/20 text-violet-200 backdrop-blur">
                   <Lock className="w-5 h-5" />
                 </div>
 
@@ -356,7 +368,7 @@ export default function Auth() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-400 text-zinc-950 flex items-center justify-center flex-shrink-0">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-violet-300/30 bg-violet-500/20 text-violet-200 backdrop-blur">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
 
@@ -373,14 +385,27 @@ export default function Auth() {
 
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-zinc-300 hover:text-white mt-10"
+            className="mt-10 inline-flex items-center gap-2 text-sm text-zinc-300 transition hover:text-white"
           >
             ← Kthehu në faqen kryesore
           </Link>
+          </div>
         </div>
 
-        <div className="p-8 sm:p-10 lg:p-12">
-          <div className="grid grid-cols-2 bg-zinc-100 rounded-2xl p-1 mb-8">
+        <div className="p-6 sm:p-9 lg:p-12">
+          <div className="mb-7 lg:hidden">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600">
+              temadiplome.ce
+            </p>
+            <h1 className="mt-2 font-serif text-3xl font-bold leading-tight text-zinc-950">
+              Hyr ose krijo llogarinë tënde.
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-zinc-500">
+              Menaxho porositë, statusin dhe materialet nga një vend i vetëm.
+            </p>
+          </div>
+
+          <div className="mb-8 grid grid-cols-2 rounded-2xl bg-zinc-100/80 p-1.5">
             <button
               type="button"
               onClick={() => {
@@ -416,15 +441,15 @@ export default function Auth() {
 
           {mode === "login" ? (
             <>
-              <h2 className="text-3xl font-bold text-zinc-950 mb-3">
+              <h2 className="mb-3 font-serif text-3xl font-bold text-zinc-950 sm:text-4xl">
                 Login
               </h2>
 
-              <p className="text-zinc-600 mb-8">
+              <p className="mb-8 text-sm leading-6 text-zinc-500 sm:text-base">
                 Vendos email-in dhe password-in për të vazhduar.
               </p>
 
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 mb-2">
                     Email
@@ -462,7 +487,7 @@ export default function Auth() {
                 </div>
 
                 {message && (
-                  <div className="bg-red-50 border border-red-100 text-red-700 text-sm rounded-xl px-4 py-3">
+                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
                     {message}
                   </div>
                 )}
@@ -470,7 +495,7 @@ export default function Auth() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-amber-400 hover:bg-amber-500 text-zinc-950 rounded-xl py-3.5 font-bold transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 py-3.5 font-bold text-white shadow-lg shadow-violet-200/60 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? "Duke hyrë..." : "Hyr dhe vazhdo"}
                   {!loading && <ArrowRight className="w-4 h-4" />}
@@ -489,7 +514,7 @@ export default function Auth() {
                     setMessage("");
                     setErrors({});
                   }}
-                  className="w-full inline-flex items-center justify-center gap-2 border border-zinc-200 rounded-xl py-3.5 font-semibold text-zinc-800 hover:bg-zinc-50 transition-colors"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white py-3.5 font-semibold text-violet-700 transition hover:bg-violet-50"
                 >
                   Regjistrohu këtu
                   <UserPlus className="w-4 h-4" />
@@ -498,16 +523,16 @@ export default function Auth() {
             </>
           ) : (
             <>
-              <h2 className="text-3xl font-bold text-zinc-950 mb-3">
+              <h2 className="mb-3 font-serif text-3xl font-bold text-zinc-950 sm:text-4xl">
                 Regjistrohu
               </h2>
 
-              <p className="text-zinc-600 mb-8">
+              <p className="mb-8 text-sm leading-6 text-zinc-500 sm:text-base">
                 Krijo llogarinë për të bërë porosi dhe për të ndjekur statusin e
                 punimit.
               </p>
 
-              <form onSubmit={handleRegister} className="space-y-4">
+              <form onSubmit={handleRegister} className="space-y-4 sm:space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <input
@@ -591,7 +616,7 @@ export default function Auth() {
                       name="country_code"
                       value={formData.country_code}
                       onChange={handleRegisterChange}
-                      className="w-40 border border-zinc-200 rounded-xl px-3 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+                      className="w-40 rounded-xl border border-zinc-200 bg-white px-3 py-3.5 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                     >
                       {countryCodes.map((item) => (
                         <option key={item.code} value={item.code}>
@@ -663,7 +688,7 @@ export default function Auth() {
                     type="text"
                     value={fullName || "Plotëso emrin dhe mbiemrin"}
                     readOnly
-                    className="w-full border border-amber-200 bg-amber-50 rounded-xl px-4 py-3 text-zinc-900 font-semibold cursor-not-allowed"
+                    className="w-full cursor-not-allowed rounded-xl border border-violet-200 bg-violet-50 px-4 py-3.5 font-semibold text-zinc-900"
                   />
 
                   <p className="text-xs text-zinc-500 mt-1.5">
@@ -693,7 +718,7 @@ export default function Auth() {
                         href="/privacy-policy"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-amber-600 underline font-medium"
+                        className="font-medium text-violet-700 underline"
                       >
                         Privacy Policy
                       </a>
@@ -716,7 +741,7 @@ export default function Auth() {
                         href="/terms-and-conditions"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-amber-600 underline font-medium"
+                        className="font-medium text-violet-700 underline"
                       >
                         Terms & Conditions
                       </a>
@@ -739,7 +764,7 @@ export default function Auth() {
                         href="/academic-integrity"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-amber-600 underline font-medium"
+                        className="font-medium text-violet-700 underline"
                       >
                         Academic Integrity
                       </a>
@@ -750,7 +775,7 @@ export default function Auth() {
                 </div>
 
                 {message && (
-                  <div className="bg-red-50 border border-red-100 text-red-700 text-sm rounded-xl px-4 py-3">
+                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
                     {message}
                   </div>
                 )}
@@ -758,7 +783,7 @@ export default function Auth() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-amber-400 hover:bg-amber-500 text-zinc-950 rounded-xl py-3.5 font-bold transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 py-3.5 font-bold text-white shadow-lg shadow-violet-200/60 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? "Duke u regjistruar..." : "Regjistrohu dhe vazhdo"}
                   {!loading && <ArrowRight className="w-4 h-4" />}
@@ -777,7 +802,7 @@ export default function Auth() {
                     setMessage("");
                     setErrors({});
                   }}
-                  className="w-full inline-flex items-center justify-center gap-2 border border-zinc-200 rounded-xl py-3.5 font-semibold text-zinc-800 hover:bg-zinc-50 transition-colors"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white py-3.5 font-semibold text-violet-700 transition hover:bg-violet-50"
                 >
                   Hyr në llogari
                 </button>

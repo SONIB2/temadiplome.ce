@@ -126,7 +126,7 @@ export default function Home() {
     "Përshëndetje! Dëshiroj një konsultim për një shërbim akademik.";
 
   return (
-    <main className="overflow-hidden bg-white text-zinc-950">
+    <main className="w-full max-w-full overflow-x-hidden bg-white text-zinc-950">
       <style>{`
         @keyframes reviewMarquee {
           from { transform: translateX(0); }
@@ -169,7 +169,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-white/5" />
             </div>
 
-            <div className="relative grid min-h-[500px] items-center gap-8 px-5 pb-8 pt-8 sm:px-8 sm:py-10 lg:min-h-[570px] lg:grid-cols-[0.9fr_1.1fr] lg:px-14 xl:px-16">
+            <div className="relative grid items-center gap-6 px-5 pb-6 pt-8 sm:px-8 sm:py-10 lg:min-h-[570px] lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 lg:px-16 lg:py-12">
               <div className="max-w-xl text-center lg:text-left">
                 <p className="mb-3 flex items-center justify-center gap-2 text-[9px] font-bold uppercase tracking-[0.18em] text-violet-700 sm:text-[11px] lg:justify-start">
                   <span className="h-px w-5 bg-violet-600" />
@@ -312,8 +312,7 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="scrollbar-hide mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5 lg:gap-5">
-            {services.map((service) => {
+          <div className="scrollbar-hide mt-5 flex w-full max-w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5 lg:gap-5">  {services.map((service) => {
               const Icon = service.icon;
               return (
                 <article
@@ -353,10 +352,9 @@ export default function Home() {
             <img
               src="/images/home/consultation-laptop.jpg"
               alt="Konsultim akademik online"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-[#100928]/84 to-[#100928]" />
-
+              className="absolute inset-0 h-full w-full object-cover brightness-[0.55] contrast-[1.08] saturate-[0.85]"            />
+           <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/65 to-[#0d0920]/95" />
+<div className="absolute inset-0 bg-[#0d0920]/35" />
             <div className="relative mx-auto max-w-md text-center text-white lg:mx-0 lg:text-left">
               <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-violet-300 sm:text-[10px]">
                 Konsultim falas
@@ -364,7 +362,7 @@ export default function Home() {
               <h2 className="mt-2 font-serif text-2xl font-bold sm:mt-3 sm:text-3xl">
                 Konsultim falas para porosisë
               </h2>
-              <p className="mt-3 text-sm leading-6 text-zinc-300 sm:mt-4">
+              <p className="mt-4 text-sm font-medium leading-6 text-white/90">
                 Na shkruani për temën, afatin, strukturën dhe dokumentet që ju
                 nevojiten. Përgjigjemi gjatë orarit të punës.
               </p>
@@ -426,8 +424,7 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="scrollbar-hide mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible md:gap-5">
-            {steps.map((step, index) => {
+          <div className="scrollbar-hide mt-5 flex w-full max-w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 md:grid md:grid-cols-3 md:overflow-visible md:gap-5">  {steps.map((step, index) => {
               const Icon = step.icon;
               return (
                 <article
