@@ -2,62 +2,6 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, MessageCircle, FileText, Download, Eye, BookOpen, LayoutTemplate } from 'lucide-react'
 import { SITE_CONFIG } from '../lib/supabase'
 
-const portfolioSamples = [
-  {
-    title: 'Analizë e Performancës Financiare të Ndërmarrjeve Shqiptare',
-    field: 'Financë',
-    level: 'Master',
-    university: 'Universiteti i Tiranës',
-    chapters: 5,
-    pages: 80,
-    img: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=600',
-  },
-  {
-    title: 'Ndikimi i Marketingut Dixhital në Sjelljen e Konsumatorit',
-    field: 'Marketing',
-    level: 'Bachelor',
-    university: 'Universiteti Europian i Tiranës',
-    chapters: 4,
-    pages: 65,
-    img: 'https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=600',
-  },
-  {
-    title: 'Kujdesi Infermieror dhe Menaxhimi i Pacientit Kritik në ICU',
-    field: 'Infermieri',
-    level: 'Bachelor',
-    university: 'Universiteti i Mjekësisë i Tiranës',
-    chapters: 5,
-    pages: 70,
-    img: 'https://images.pexels.com/photos/4386464/pexels-photo-4386464.jpeg?auto=compress&cs=tinysrgb&w=600',
-  },
-  {
-    title: 'Analiza e Sistemit Juridik dhe E Drejta e Punës në Shqipëri',
-    field: 'Juridik',
-    level: 'Master',
-    university: 'Universiteti i Tiranës',
-    chapters: 6,
-    pages: 90,
-    img: 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=600',
-  },
-  {
-    title: 'Menaxhimi i Burimeve Njerëzore dhe Motivimi i Punonjësve',
-    field: 'Menaxhim',
-    level: 'Bachelor',
-    university: 'Kolegji AAB',
-    chapters: 4,
-    pages: 60,
-    img: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600',
-  },
-  {
-    title: 'Turizmi i Qëndrueshëm dhe Zhvillimi Ekonomik Rajonal',
-    field: 'Turizëm',
-    level: 'Master',
-    university: 'Universiteti Aleksandër Moisiu Durrës',
-    chapters: 5,
-    pages: 75,
-    img: 'https://images.pexels.com/photos/1285625/pexels-photo-1285625.jpeg?auto=compress&cs=tinysrgb&w=600',
-  },
-]
 
 const templates = [
   {
@@ -101,65 +45,10 @@ export default function Portfolio() {
   return (
     <div className="pt-24 pb-20">
 
-      {/* Hero */}
-      <section className="container-academic text-center mb-14">
-        <span className="section-label">Portofol</span>
-        <h1 className="section-title mt-2 mb-4">Punime të realizuara</h1>
-        <p className="section-subtitle mx-auto">
-          Shembuj reprezentativë nga punimet tona. Çdo punë është unike, e shkruar nga e para dhe e personalizuar sipas kërkesave tuaja.
-        </p>
-      </section>
-
-      {/* Portfolio grid */}
-      <section className="container-academic mb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {portfolioSamples.map((p) => (
-            <div key={p.title} className="bg-white border border-zinc-100 rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200 group flex flex-col">
-              <div className="relative h-44 overflow-hidden">
-                <img
-                  src={p.img}
-                  alt={p.field}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/70 to-transparent" />
-                <div className="absolute bottom-3 left-3 flex gap-2">
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${levelColors[p.level] || 'bg-zinc-200 text-zinc-700'}`}>
-                    {p.level}
-                  </span>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/90 text-zinc-800">
-                    {p.field}
-                  </span>
-                </div>
-              </div>
-              <div className="p-5 flex-1 flex flex-col">
-                <h3 className="font-serif font-semibold text-zinc-900 text-sm leading-snug mb-3 flex-1">{p.title}</h3>
-                <div className="text-xs text-zinc-400 space-y-1 border-t border-zinc-100 pt-3">
-                  <p>{p.university}</p>
-                  <div className="flex gap-3 text-zinc-500">
-                    <span>{p.chapters} kapituj</span>
-                    <span>{p.pages} faqe</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
-          <p className="text-sm text-amber-800 leading-relaxed">
-            Punimet e mësipërme janë tregues orientues. Çdo punë e re kryhet nga e para, me temë dhe kërkesa unike.
-            Nëse dëshironi të shikoni shembuj nga fusha juaj specifike,{' '}
-            <a href={`https://wa.me/${SITE_CONFIG.whatsapp}`} target="_blank" rel="noopener noreferrer" className="font-bold underline text-amber-700 hover:text-amber-900">
-              na kontaktoni direkt
-            </a>.
-          </p>
-        </div>
-      </section>
-
       {/* Templates */}
       <section className="container-academic mb-14">
         <div className="text-center mb-8">
-          <span className="section-label">Struktura</span>
+          <span className="section-label">Shembuj Strukturash</span>
           <h2 className="section-title mt-2 mb-3">Template Universitare</h2>
           <p className="section-subtitle mx-auto">
             Çdo punë ndiqet sipas strukturës standarde të universitetit përkatës dhe udhëzimeve të pedagogut.

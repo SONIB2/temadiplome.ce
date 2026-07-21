@@ -313,33 +313,49 @@ export default function OrderWork() {
       : form.budget_note;
 
     const { error: insertErr } = await supabase.from("orders").insert({
+  full_name: userProfile.full_name,
+  email: userProfile.email,
+  phone: userProfile.phone,
+  university: userProfile.university,
+  field_of_study: userProfile.study_field,
+  topic: form.topic.trim(),
+  study_level: form.study_level,
+  work_type: form.work_type,
+  subject_area: form.subject_area,
+  deadline: form.deadline,
+  has_existing_material: form.has_existing_material,
+  description: form.description.trim(),
+  uploaded_files: uploadedFiles,
+  budget_note: budgetNote,
+  status: "submitted",
+  payment_status: isFree ? "not_required" : "pending",
+});
+
+if (insertErr) {
+  console.error("Order insert error:", insertErr);
+  setLoading(false);
+  setError("Diçka shkoi keq. Ju lutemi provoni sërish.");
+  return;
+}
+
+await supabase.functions.invoke("send-notification", {
+  body: {
+    type: "order",
+    data: {
       full_name: userProfile.full_name,
       email: userProfile.email,
       phone: userProfile.phone,
-      university: userProfile.university,
-      field_of_study: userProfile.study_field,
       topic: form.topic.trim(),
-      study_level: form.study_level,
-      work_type: form.work_type,
-      subject_area: form.subject_area,
+      service: selectedService,
       deadline: form.deadline,
-      has_existing_material: form.has_existing_material,
       description: form.description.trim(),
-      uploaded_files: uploadedFiles,
-      budget_note: budgetNote,
-      status: "submitted",
-      payment_status: isFree ? "not_required" : "pending",
-    });
+      payment: budgetNote,
+    },
+  },
+});
 
-    setLoading(false);
-
-    if (insertErr) {
-      console.error("Order insert error:", insertErr);
-      setError("Diçka shkoi keq. Ju lutemi provoni sërish.");
-      return;
-    }
-
-    setSubmitted(true);
+setLoading(false);
+setSubmitted(true);
   };
 
   if (profileLoading) {
@@ -851,8 +867,11 @@ export default function OrderWork() {
             </div>
           </div>
 
-          <TermsPopup inline onAccept={() => setTermsChecked(true)} />
-
+          <TermsPopup
+  inline
+  clientName={userProfile?.full_name}
+  onAccept={() => setTermsChecked(true)}
+/>
           {termsShake && !termsChecked && (
             <p className="text-xs text-red-500 text-center font-medium">
               Duhet të pranosh Marrëveshjen e Bashkëpunimit para se të

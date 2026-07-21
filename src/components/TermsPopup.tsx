@@ -4,17 +4,31 @@ import { Shield, CheckCircle2, FileText, ChevronDown, ChevronUp, X } from 'lucid
 interface Props {
   inline?: boolean
   onAccept?: () => void
+  clientName?: string
 }
 
 const STORAGE_KEY = 'tdc_terms_agreed'
 
-const TermsContent = ({ expanded, setExpanded }: { expanded: boolean; setExpanded: (v: boolean) => void }) => (
+const TermsContent = ({
+  expanded,
+  setExpanded,
+  clientName,
+}: {
+  expanded: boolean
+  setExpanded: (v: boolean) => void
+  clientName?: string
+}) => (
   <div className="space-y-3">
     <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-5 space-y-4 text-sm">
       <div>
         <p className="text-xs text-zinc-500 mb-0.5">Perfaqësues</p>
         <p className="font-bold text-zinc-900">temadiplome.ce</p>
-        <p className="text-zinc-400 text-xs mt-0.5">Klienti: plotësohet me emrin tuaj pas konfirmimit</p>
+        <p className="text-zinc-400 text-xs mt-0.5">
+  Klienti:{" "}
+  <span className="font-semibold text-zinc-700">
+    {clientName || "plotësohet me emrin tuaj pas konfirmimit"}
+  </span>
+</p>
       </div>
 
       <div>
@@ -42,7 +56,12 @@ const TermsContent = ({ expanded, setExpanded }: { expanded: boolean; setExpande
           </div>
           <div className="text-xs text-zinc-500 space-y-1 pt-2 border-t border-zinc-200">
             <p><strong className="text-zinc-700">Nënshkruar nga:</strong> temadiplome.ce</p>
-            <p><strong className="text-zinc-700">Klienti:</strong> [Emri i Studentit]</p>
+            <p>
+  <strong className="text-zinc-700">Klienti:</strong>{" "}
+  <span className="font-semibold text-zinc-700">
+    {clientName || "plotësohet me emrin tuaj pas konfirmimit"}
+  </span>
+</p>
           </div>
         </div>
       )}
@@ -66,8 +85,7 @@ const TermsContent = ({ expanded, setExpanded }: { expanded: boolean; setExpande
   </div>
 )
 
-export default function TermsPopup({ inline = false, onAccept }: Props) {
-  const [visible, setVisible] = useState(false)
+export default function TermsPopup({ inline = false, onAccept, clientName }: Props) {  const [visible, setVisible] = useState(false)
   const [checked, setChecked] = useState(false)
   const [shake, setShake] = useState(false)
   const [expanded, setExpanded] = useState(false)
@@ -130,8 +148,12 @@ export default function TermsPopup({ inline = false, onAccept }: Props) {
           </div>
           <p className="font-serif font-bold text-zinc-900 text-base">Marrëveshja e Bashkëpunimit</p>
         </div>
-        <TermsContent expanded={expanded} setExpanded={setExpanded} />
-        <div className="mt-4">{footer}</div>
+        <TermsContent
+  expanded={expanded}
+  setExpanded={setExpanded}
+  clientName={clientName}
+/>
+<div className="mt-4">{footer}</div>
       </div>
     )
   }
@@ -164,8 +186,12 @@ export default function TermsPopup({ inline = false, onAccept }: Props) {
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
-          <TermsContent expanded={expanded} setExpanded={setExpanded} />
-        </div>
+         <TermsContent
+  expanded={expanded}
+  setExpanded={setExpanded}
+  clientName={clientName}
+/>   
+     </div>
 
         {/* Footer */}
         <div className="px-6 pb-6 pt-4 border-t border-zinc-100 flex-shrink-0 bg-white space-y-4">

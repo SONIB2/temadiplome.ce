@@ -1,7 +1,0 @@
-export { default as Hero } from './Hero'
-export { default as WhyUs } from './WhyUs'
-export { default as HowItWorks } from './HowItWorks'
-export { default as ServicesPreview } from './ServicesPreview'
-export { default as Testimonials } from './Testimonials'
-export { default as CTABanner } from './CTABanner'
-export { default as UniversitiesStrip } from './UniversitiesStrip'

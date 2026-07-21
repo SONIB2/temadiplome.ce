@@ -1,18 +1,41 @@
-import { MessageCircle } from 'lucide-react'
-import { SITE_CONFIG } from '../lib/supabase'
+import { MessageCircle } from "lucide-react";
+import { SITE_CONFIG } from "../lib/supabase";
 
 export default function WhatsAppButton() {
+  const message =
+    "Përshëndetje! Dëshiroj informacion për një shërbim akademik.";
+
   return (
     <a
-      href={`https://wa.me/${SITE_CONFIG.whatsapp}`}
+      href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
+        message
+      )}`}
       target="_blank"
-      rel="noopener noreferrer"
-      className="fixed bottom-5 right-5 z-40 flex items-center gap-2.5 bg-[#25D366] text-white pl-4 pr-5 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:bg-green-500 active:scale-95 transition-all duration-200 group"
-      aria-label="Na kontakto në WhatsApp"
+      rel="noreferrer"
+      aria-label="Na shkruani në WhatsApp"
+      className="
+        fixed
+        bottom-5
+        right-[max(20px,calc((100vw-1440px)/2+40px))]
+        z-50
+        inline-flex
+        items-center
+        gap-2
+        rounded-full
+        bg-green-500
+        px-5
+        py-3
+        text-sm
+        font-bold
+        text-white
+        shadow-xl
+        transition
+        hover:-translate-y-0.5
+        hover:bg-green-600
+      "
     >
-      <MessageCircle className="w-5 h-5" />
-      <span className="text-sm font-semibold hidden sm:block">Na shkruani</span>
-      <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white" />
+      <MessageCircle className="h-5 w-5" />
+      <span className="hidden sm:inline">Na shkruani</span>
     </a>
-  )
+  );
 }

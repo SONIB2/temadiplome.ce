@@ -1,7 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 import Header from "./components/Header";
-import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
 import TermsPopup from "./components/TermsPopup";
@@ -20,24 +19,29 @@ import FreeMaterials from "./pages/FreeMaterials";
 import Admin from "./pages/Admin";
 import Universities from "./pages/Universities";
 import Portfolio from "./pages/Portfolio";
-
+import Footer from "./components/Footer";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import CookiePolicy from "./pages/CookiePolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import AcademicIntegrity from "./pages/AcademicIntegrity";
 
-import Auth from "./pages/Auth.tsx";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import MyOrders from "./pages/MyOrders";
 import OrderTracking from "./pages/OrderTracking";
 
 export default function App() {
+  const location = useLocation();
+
+  const isAdminPage = location.pathname.startsWith("/admin");
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white">
       <ScrollToTop />
-      <TermsPopup />
-      <Header />
+
+      {!isAdminPage && <TermsPopup />}
+      {!isAdminPage && <Header />}
 
       <main className="flex-1">
         <Routes>
@@ -54,10 +58,10 @@ export default function App() {
           <Route path="/universitetet" element={<Universities />} />
           <Route path="/portofoli" element={<Portfolio />} />
 
-          {/* Login/Register in one page */}
+          {/* Authentication */}
           <Route path="/auth" element={<Auth />} />
 
-          {/* Private / user pages */}
+          {/* User pages */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/zgjidh-punimin" element={<OrderWork />} />
           <Route path="/my-orders" element={<MyOrders />} />
@@ -68,19 +72,24 @@ export default function App() {
 
           {/* Legal pages */}
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-and-conditions" element={<TermsConditions />} />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsConditions />}
+          />
           <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
-          <Route path="/academic-integrity" element={<AcademicIntegrity />} />
+          <Route
+            path="/academic-integrity"
+            element={<AcademicIntegrity />}
+          />
 
           {/* Fallback */}
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
-
-      <Footer />
-      <BackToTopButton />
-      <WhatsAppButton />
+      {!isAdminPage && <Footer />}
+      {!isAdminPage && <BackToTopButton />}
+      {!isAdminPage && <WhatsAppButton />}
     </div>
   );
 }

@@ -1,12 +1,16 @@
 import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Lock, UserPlus, ShieldCheck } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
+const ADMIN_EMAIL = "temadiplome.ce@gmail.com";
+
 type AuthMode = "login" | "register";
 
 type FormErrors = {
-  full_name?: string;
+  first_name?: string;
+  last_name?: string;
   email?: string;
   phone?: string;
   university?: string;
@@ -32,11 +36,7 @@ const countryCodes = [
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
 
-  return (
-    <p className="mt-1.5 text-xs text-red-600 font-medium">
-      {message}
-    </p>
-  );
+  return <p className="mt-1.5 text-xs text-red-600 font-medium">{message}</p>;
 }
 
 export default function Auth() {
@@ -50,7 +50,8 @@ export default function Auth() {
   const [errors, setErrors] = useState<FormErrors>({});
 
   const [formData, setFormData] = useState({
-    full_name: "",
+    first_name: "",
+    last_name: "",
     email: "",
     country_code: "+355",
     phone: "",
@@ -58,11 +59,13 @@ export default function Auth() {
     study_field: "",
     password: "",
     confirm_password: "",
-    signature_name: "",
     accepted_terms: false,
     accepted_privacy: false,
     accepted_academic_integrity: false,
   });
+
+  const fullName =
+    `${formData.first_name.trim()} ${formData.last_name.trim()}`.trim();
 
   const inputClass =
     "w-full border border-zinc-200 rounded-xl px-4 py-3 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400";
@@ -74,15 +77,27 @@ export default function Auth() {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleRegisterChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const target = e.target;
+    const { name, value } = target;
 
     setMessage("");
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
+      const checked = target.checked;
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
 
     clearFieldError(name as keyof FormErrors);
   };
@@ -90,24 +105,27 @@ export default function Auth() {
   const validateRegister = () => {
     const newErrors: FormErrors = {};
 
-    const nameRegex = /^[A-Za-zÀ-ž\s]{3,}$/;
+    const nameRegex = /^[A-Za-zÀ-ž\s]{2,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     const phoneRegex = /^[0-9]{7,12}$/;
 
-    if (!formData.full_name.trim()) {
-      newErrors.full_name =
-        "Emri dhe mbiemri janë të detyrueshëm. Shembull: Sonila Balla";
-    } else if (!nameRegex.test(formData.full_name.trim())) {
-      newErrors.full_name =
-        "Vendosni emër dhe mbiemër të vlefshëm. Shembull: Sonila Balla";
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = "Emri është i detyrueshëm. Shembull: Sonila";
+    } else if (!nameRegex.test(formData.first_name.trim())) {
+      newErrors.first_name = "Vendosni një emër të vlefshëm. Shembull: Sonila";
+    }
+
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = "Mbiemri është i detyrueshëm. Shembull: Balla";
+    } else if (!nameRegex.test(formData.last_name.trim())) {
+      newErrors.last_name = "Vendosni një mbiemër të vlefshëm. Shembull: Balla";
     }
 
     if (!formData.email.trim()) {
       newErrors.email =
         "Email-i është i detyrueshëm. Shembull: emri@gmail.com";
     } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email =
-        "Email-i nuk është i saktë. Shembull: emri@gmail.com";
+      newErrors.email = "Email-i nuk është i saktë. Shembull: emri@gmail.com";
     }
 
     if (!formData.phone.trim()) {
@@ -132,16 +150,13 @@ export default function Auth() {
       newErrors.password =
         "Password-i është i detyrueshëm. Duhet të ketë të paktën 8 karaktere.";
     } else if (formData.password.length < 8) {
-      newErrors.password =
-        "Password-i duhet të ketë të paktën 8 karaktere.";
+      newErrors.password = "Password-i duhet të ketë të paktën 8 karaktere.";
     }
 
     if (!formData.confirm_password) {
-      newErrors.confirm_password =
-        "Ju lutemi konfirmoni password-in.";
+      newErrors.confirm_password = "Ju lutemi konfirmoni password-in.";
     } else if (formData.password !== formData.confirm_password) {
-      newErrors.confirm_password =
-        "Password-et nuk përputhen.";
+      newErrors.confirm_password = "Password-et nuk përputhen.";
     }
 
     if (!formData.accepted_privacy) {
@@ -159,15 +174,9 @@ export default function Auth() {
         "Duhet të pranoni Academic Integrity për të vazhduar.";
     }
 
-    if (!formData.signature_name.trim()) {
+    if (!fullName) {
       newErrors.signature_name =
-        "Firma elektronike është e detyrueshme. Shkruani emrin dhe mbiemrin.";
-    } else if (
-      formData.signature_name.trim().toLowerCase() !==
-      formData.full_name.trim().toLowerCase()
-    ) {
-      newErrors.signature_name =
-        "Firma elektronike duhet të jetë e njëjtë me emrin dhe mbiemrin. Shembull: Sonila Balla";
+        "Firma elektronike krijohet automatikisht nga emri dhe mbiemri.";
     }
 
     setErrors(newErrors);
@@ -175,39 +184,67 @@ export default function Auth() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
 
     setMessage("");
     setLoading(true);
 
+    const cleanEmail = loginEmail.trim().toLowerCase();
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: loginEmail.trim().toLowerCase(),
+      email: cleanEmail,
       password: loginPassword,
     });
 
-    setLoading(false);
-
     if (error) {
       console.error("Login error:", error);
+      setLoading(false);
       setMessage("Email ose password i pasaktë.");
       return;
     }
 
+    const loggedEmail = data.user.email?.toLowerCase();
+
+    if (loggedEmail === ADMIN_EMAIL) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          auth_user_id: data.user.id,
+          email: data.user.email,
+          full_name: "Admin",
+          role: "admin",
+        })
+      );
+
+      setLoading(false);
+      window.location.href = "/admin";
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("user_agreements")
+      .select(
+        "auth_user_id, first_name, last_name, full_name, email, phone, country_code, university, study_field, signature_name"
+      )
+      .eq("auth_user_id", data.user.id)
+      .maybeSingle();
+
+    const currentUser = profile || {
+      auth_user_id: data.user.id,
+      email: data.user.email,
+      
+    };
+
     localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({
-        auth_user_id: data.user.id,
-        email: data.user.email,
-      })
-    );
-
-    window.location.href = "/zgjidh-punimin";
+    setLoading(false);
+    window.location.href = "/dashboard";
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
 
     setMessage("");
@@ -218,8 +255,18 @@ export default function Auth() {
 
     setLoading(true);
 
+    const cleanEmail = formData.email.trim().toLowerCase();
+    const cleanPhone = formData.phone.trim();
+    const signatureName = fullName;
+
+    if (cleanEmail === ADMIN_EMAIL) {
+      setLoading(false);
+      setMessage("Ky email është i rezervuar për administratorin.");
+      return;
+    }
+
     const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: formData.email.trim().toLowerCase(),
+      email: cleanEmail,
       password: formData.password,
     });
 
@@ -232,18 +279,21 @@ export default function Auth() {
 
     const userData = {
       auth_user_id: authData.user?.id,
-      full_name: formData.full_name.trim(),
-      email: formData.email.trim().toLowerCase(),
+      first_name: formData.first_name.trim(),
+      last_name: formData.last_name.trim(),
+      full_name: fullName,
+      email: cleanEmail,
       country_code: formData.country_code,
-      phone: `${formData.country_code}${formData.phone.trim()}`,
+      phone: `${formData.country_code}${cleanPhone}`,
       university: formData.university.trim(),
       study_field: formData.study_field.trim(),
-      signature_name: formData.signature_name.trim(),
+      signature_name: signatureName,
       accepted_terms: formData.accepted_terms,
       accepted_privacy: formData.accepted_privacy,
       accepted_academic_integrity: formData.accepted_academic_integrity,
       agreement_version: "v1.0",
       created_at: new Date().toISOString(),
+      role: "student",
     };
 
     const { error: agreementError } = await supabase
@@ -253,15 +303,24 @@ export default function Auth() {
     if (agreementError) {
       console.error("Agreement insert error:", agreementError);
       setLoading(false);
-      setMessage(`Regjistrimi nuk u ruajt në database: ${agreementError.message}`);
+      setMessage(
+        `Regjistrimi nuk u ruajt në database: ${agreementError.message}`
+      );
       return;
     }
+
+    await supabase.functions.invoke("send-notification", {
+      body: {
+        type: "registration",
+        data: userData,
+      },
+    });
 
     localStorage.setItem("currentUser", JSON.stringify(userData));
     localStorage.setItem("isLoggedIn", "true");
 
     setLoading(false);
-    window.location.href = "/zgjidh-punimin";
+    window.location.href = "/dashboard";
   };
 
   return (
@@ -304,8 +363,8 @@ export default function Auth() {
                 <div>
                   <h3 className="font-semibold">Pranim i kushteve</h3>
                   <p className="text-sm text-zinc-400">
-                    Gjatë regjistrimit ruhet pranimi i Privacy Policy, Terms dhe
-                    firma elektronike.
+                    Gjatë regjistrimit ruhen kushtet e pranuara, firma
+                    elektronike dhe të dhënat e klientit.
                   </p>
                 </div>
               </div>
@@ -362,7 +421,7 @@ export default function Auth() {
               </h2>
 
               <p className="text-zinc-600 mb-8">
-                Vendos email-in dhe password-in për të vazhduar me porosinë.
+                Vendos email-in dhe password-in për të vazhduar.
               </p>
 
               <form onSubmit={handleLogin} className="space-y-4">
@@ -449,19 +508,36 @@ export default function Auth() {
               </p>
 
               <form onSubmit={handleRegister} className="space-y-4">
-                <div>
-                  <input
-                    name="full_name"
-                    type="text"
-                    placeholder="Emër dhe mbiemër, p.sh. Sonila Balla"
-                    value={formData.full_name}
-                    onChange={handleRegisterChange}
-                    required
-                    className={`${inputClass} ${
-                      errors.full_name ? errorInputClass : ""
-                    }`}
-                  />
-                  <FieldError message={errors.full_name} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <input
+                      name="first_name"
+                      type="text"
+                      placeholder="Emri, p.sh. Sonila"
+                      value={formData.first_name}
+                      onChange={handleRegisterChange}
+                      required
+                      className={`${inputClass} ${
+                        errors.first_name ? errorInputClass : ""
+                      }`}
+                    />
+                    <FieldError message={errors.first_name} />
+                  </div>
+
+                  <div>
+                    <input
+                      name="last_name"
+                      type="text"
+                      placeholder="Mbiemri, p.sh. Balla"
+                      value={formData.last_name}
+                      onChange={handleRegisterChange}
+                      required
+                      className={`${inputClass} ${
+                        errors.last_name ? errorInputClass : ""
+                      }`}
+                    />
+                    <FieldError message={errors.last_name} />
+                  </div>
                 </div>
 
                 <div>
@@ -512,13 +588,9 @@ export default function Auth() {
                 <div>
                   <div className="flex gap-2">
                     <select
+                      name="country_code"
                       value={formData.country_code}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          country_code: e.target.value,
-                        }))
-                      }
+                      onChange={handleRegisterChange}
                       className="w-40 border border-zinc-200 rounded-xl px-3 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
                     >
                       {countryCodes.map((item) => (
@@ -580,6 +652,26 @@ export default function Auth() {
                     }`}
                   />
                   <FieldError message={errors.study_field} />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-700 mb-2">
+                    Firma elektronike
+                  </label>
+
+                  <input
+                    type="text"
+                    value={fullName || "Plotëso emrin dhe mbiemrin"}
+                    readOnly
+                    className="w-full border border-amber-200 bg-amber-50 rounded-xl px-4 py-3 text-zinc-900 font-semibold cursor-not-allowed"
+                  />
+
+                  <p className="text-xs text-zinc-500 mt-1.5">
+                    Firma elektronike krijohet automatikisht nga emri dhe
+                    mbiemri dhe ruhet në kontratën e bashkëpunimit.
+                  </p>
+
+                  <FieldError message={errors.signature_name} />
                 </div>
 
                 <p className="text-sm text-zinc-500">
@@ -655,21 +747,6 @@ export default function Auth() {
                     </span>
                   </label>
                   <FieldError message={errors.accepted_academic_integrity} />
-                </div>
-
-                <div>
-                  <input
-                    name="signature_name"
-                    type="text"
-                    placeholder="Firmë elektronike, p.sh. Sonila Balla"
-                    value={formData.signature_name}
-                    onChange={handleRegisterChange}
-                    required
-                    className={`${inputClass} ${
-                      errors.signature_name ? errorInputClass : ""
-                    }`}
-                  />
-                  <FieldError message={errors.signature_name} />
                 </div>
 
                 {message && (
