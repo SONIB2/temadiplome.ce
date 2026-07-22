@@ -652,128 +652,106 @@ export default function AdminOrders() {
           </div>
 
           {/* DESKTOP CALENDAR */}
-          <div className="hidden md:block">
-            <div className="grid grid-cols-7 border-b border-zinc-100 bg-zinc-50/80">
-              {weekDays.map((day) => (
-                <div
-                  key={day}
-                  className="border-r border-zinc-100 px-2 py-3 text-center text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500 last:border-r-0"
-                >
-                  {day}
-                </div>
-              ))}
+         <div className="w-full overflow-x-auto scrollbar-hide">
+  <div className="min-w-[760px]">
+    <div className="grid grid-cols-7 border-b border-zinc-100 bg-zinc-50">
+      {["Hën", "Mar", "Mër", "Enj", "Pre", "Sht", "Die"].map((day) => (
+        <div
+          key={day}
+          className="px-2 py-3 text-center text-[10px] font-bold uppercase tracking-wide text-zinc-500"
+        >
+          {day}
+        </div>
+      ))}
+    </div>
+
+    <div className="grid grid-cols-7">
+      {calendarDays.map((date, index) => {
+        if (!date) {
+          return (
+            <div
+              key={`empty-${index}`}
+              className="min-h-[118px] border-b border-r border-zinc-100 bg-zinc-50/50"
+            />
+          );
+        }
+
+        const dayOrders = ordersForDay(date);
+        const isToday = sameDay(date, new Date());
+
+        return (
+          <div
+            key={date.toISOString()}
+            className="min-h-[118px] border-b border-r border-zinc-100 p-2"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+                  isToday
+                    ? "bg-violet-700 text-white"
+                    : "text-zinc-700"
+                }`}
+              >
+                {date.getDate()}
+              </span>
+
+              {dayOrders.length > 0 && (
+                <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700">
+                  {dayOrders.length}
+                </span>
+              )}
             </div>
 
-            <div className="grid grid-cols-7">
-              {calendarDays.map((date, index) => {
-                if (!date) {
-                  return (
-                    <div
-                      key={`empty-${index}`}
-                      className="min-h-[145px] border-b border-r border-zinc-100 bg-zinc-50/40"
-                    />
-                  );
-                }
-
-                const dayOrders = ordersForDay(date);
-                const isToday = sameDay(date, new Date());
-
-                return (
-                  <div
-                    key={date.toISOString()}
-                    className="min-h-[145px] border-b border-r border-zinc-100 p-2.5"
-                  >
-                    <div className="mb-2 flex items-center justify-between">
-                      <span
-                        className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
-                          isToday ? "bg-violet-700 text-white" : "text-zinc-700"
-                        }`}
-                      >
-                        {date.getDate()}
-                      </span>
-
-                      {dayOrders.length > 0 && (
-                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700">
-                          {dayOrders.length}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      {dayOrders.slice(0, 3).map((order) => (
-                        <button
-                          key={order.id}
-                          type="button"
-                          onClick={() => openOrder(order)}
-                          className={`w-full rounded-lg border px-2 py-1.5 text-left text-[10px] leading-4 transition ${calendarEventClass(
-                            order.deadline
-                          )}`}
-                        >
-                          <span className="block truncate font-bold">
-                            {order.full_name}
-                          </span>
-
-                          <span className="block truncate opacity-80">
-                            {order.topic || order.work_type || "Pa temë"}
-                          </span>
-                        </button>
-                      ))}
-
-                      {dayOrders.length > 3 && (
-                        <p className="px-1 text-[10px] font-medium text-zinc-400">
-                          +{dayOrders.length - 3} të tjera
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* MOBILE DEADLINE LIST */}
-          <div className="space-y-3 p-4 md:hidden">
-            {activeDeadlineOrders.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center text-sm text-zinc-400">
-                Nuk ka porosi aktive me afat.
-              </div>
-            ) : (
-              activeDeadlineOrders.map((order) => {
+            <div className="space-y-1.5">
+              {dayOrders.slice(0, 2).map((order) => {
                 const urgency = getUrgency(order.deadline);
+
+                const urgencyClasses =
+                  urgency.label.includes("kaluar") ||
+                  urgency.label.includes("sot")
+                    ? "border-red-200 bg-red-50 text-red-700"
+                    : urgency.label.includes("Urgjente")
+                      ? "border-orange-200 bg-orange-50 text-orange-700"
+                      : urgency.label.includes("javë")
+                        ? "border-amber-200 bg-amber-50 text-amber-700"
+                        : "border-emerald-200 bg-emerald-50 text-emerald-700";
 
                 return (
                   <button
                     key={order.id}
                     type="button"
-                    onClick={() => openOrder(order)}
-                    className="w-full rounded-[18px] border border-zinc-100 bg-white p-4 text-left shadow-sm transition hover:border-violet-200"
+                    onClick={() =>
+                      setSelected({
+                        ...order,
+                        order_status:
+                          order.order_status || "received",
+                      })
+                    }
+                    className={`w-full rounded-lg border px-2 py-1.5 text-left text-[10px] font-semibold leading-4 transition hover:scale-[1.01] ${urgencyClasses}`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-zinc-950">
-                          {order.full_name}
-                        </p>
+                    <span className="block truncate">
+                      {order.full_name}
+                    </span>
 
-                        <p className="mt-1 text-xs text-zinc-500">
-                          {formatDate(order.deadline)}
-                        </p>
-                      </div>
-
-                      <span
-                        className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold ${urgency.className}`}
-                      >
-                        {urgency.label}
-                      </span>
-                    </div>
-
-                    <p className="mt-3 line-clamp-2 text-xs leading-5 text-zinc-600">
-                      {order.topic || order.description || "Pa përshkrim"}
-                    </p>
+                    <span className="block truncate font-normal opacity-80">
+                      {order.topic || order.work_type || "Pa temë"}
+                    </span>
                   </button>
                 );
-              })
-            )}
+              })}
+
+              {dayOrders.length > 2 && (
+                <p className="px-1 text-[10px] font-medium text-zinc-400">
+                  +{dayOrders.length - 2} të tjera
+                </p>
+              )}
+            </div>
           </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
         </section>
       ) : (
         <section className="overflow-hidden rounded-[24px] border border-zinc-100 bg-white shadow-[0_16px_48px_rgba(24,24,27,0.05)]">

@@ -392,9 +392,6 @@ export default function Dashboard() {
           <section className="mt-6 rounded-[24px] border border-zinc-100 bg-white p-5 shadow-[0_14px_44px_rgba(24,24,27,0.05)] sm:p-7">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600">
-                  Porositë
-                </p>
 
                 <h2 className="mt-2 font-serif text-2xl font-bold text-zinc-950">
                   Porositë e mia
