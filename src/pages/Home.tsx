@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -14,7 +15,7 @@ import {
   Send,
   Star,
 } from "lucide-react";
-import { SITE_CONFIG } from "../lib/supabase";
+import { SITE_CONFIG, supabase } from "../lib/supabase";
 
 const services = [
   {
@@ -125,6 +126,65 @@ export default function Home() {
   const whatsappMessage =
     "Përshëndetje! Dëshiroj një konsultim për një shërbim akademik.";
 
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
+  const handleHomeLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoginLoading(true);
+    setLoginError("");
+
+    const cleanEmail = loginEmail.trim().toLowerCase();
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password: loginPassword,
+    });
+
+    if (error || !data.user) {
+      setLoginLoading(false);
+      setLoginError("Email ose fjalëkalim i pasaktë.");
+      return;
+    }
+
+    if (cleanEmail === "temadiplome.ce@gmail.com") {
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("currentUser");
+      setLoginLoading(false);
+      window.location.href = "/admin";
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from("user_agreements")
+      .select(
+        "auth_user_id, full_name, first_name, last_name, email, phone, country_code, university, study_field",
+      )
+      .eq("auth_user_id", data.user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Profile error:", profileError);
+    }
+
+    const loggedUser = profile || {
+      auth_user_id: data.user.id,
+      full_name:
+        data.user.user_metadata?.full_name ||
+        data.user.email?.split("@")[0] ||
+        "Student",
+      email: data.user.email || cleanEmail,
+    };
+
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("currentUser", JSON.stringify(loggedUser));
+
+    setLoginLoading(false);
+    window.location.href = "/dashboard";
+  };
+
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-white text-zinc-950">
       <style>{`
@@ -220,33 +280,54 @@ export default function Home() {
                     Hyr në llogarinë tënde për të vazhduar me porosinë.
                   </p>
 
-                  <div className="mt-5 space-y-3">
-                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
+                  <form onSubmit={handleHomeLogin} className="mt-5 space-y-3">
+                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
                       <Mail className="h-4 w-4 shrink-0 text-violet-600" />
                       <input
                         type="email"
+                        required
+                        autoComplete="email"
+                        value={loginEmail}
+                        onChange={(event) => {
+                          setLoginEmail(event.target.value);
+                          setLoginError("");
+                        }}
                         placeholder="Email"
                         className="w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
                       />
                     </div>
 
-                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
+                    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
                       <Lock className="h-4 w-4 shrink-0 text-violet-600" />
                       <input
                         type="password"
+                        required
+                        autoComplete="current-password"
+                        value={loginPassword}
+                        onChange={(event) => {
+                          setLoginPassword(event.target.value);
+                          setLoginError("");
+                        }}
                         placeholder="Password"
                         className="w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
                       />
                     </div>
 
-                    <Link
-                      to="/auth"
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200/50 transition hover:-translate-y-0.5"
+                    {loginError && (
+                      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-medium text-red-700">
+                        {loginError}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={loginLoading}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200/50 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      Hyr
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+                      {loginLoading ? "Duke hyrë..." : "Hyr"}
+                      {!loginLoading && <ArrowRight className="h-4 w-4" />}
+                    </button>
+                  </form>
 
                   <div className="my-5 flex items-center gap-3">
                     <div className="h-px flex-1 bg-zinc-200" />

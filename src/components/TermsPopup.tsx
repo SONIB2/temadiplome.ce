@@ -1,217 +1,445 @@
-import { useState, useEffect } from 'react'
-import { Shield, CheckCircle2, FileText, ChevronDown, ChevronUp, X } from 'lucide-react'
+import { useEffect, useState } from "react";
+import type { ElementType } from "react";
+import {
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  FileCheck2,
+  FileText,
+  HandCoins,
+  RefreshCw,
+  Scale,
+  ShieldCheck,
+  UserRound,
+  X,
+} from "lucide-react";
 
 interface Props {
-  inline?: boolean
-  onAccept?: () => void
-  clientName?: string
+  inline?: boolean;
+  onAccept?: () => void;
+  clientName?: string;
 }
 
-const STORAGE_KEY = 'tdc_terms_agreed'
+interface AgreementSection {
+  id: string;
+  title: string;
+  description: string;
+  icon: ElementType;
+}
 
-const TermsContent = ({
-  expanded,
-  setExpanded,
-  clientName,
+const STORAGE_KEY = "tdc_terms_agreed";
+
+const agreementSections: AgreementSection[] = [
+  {
+    id: "object",
+    title: "Objekti i marrëveshjes",
+    icon: FileText,
+    description:
+      "Kjo marrëveshje përcakton kushtet e asistencës akademike, strukturimit, analizës, formatimit dhe shërbimeve të tjera të dakorduara me Klientin. Detajet e shërbimit, tema, afati dhe materialet përcaktohen gjatë komunikimit dhe konfirmimit të porosisë.",
+  },
+  {
+    id: "changes",
+    title: "Ndryshimet dhe afatet",
+    icon: RefreshCw,
+    description:
+      "Klienti mund të kërkojë ndryshime brenda një muaji nga dorëzimi. Përfshihen deri në 3–4 raunde ndryshimesh që lidhen me kërkesën fillestare. Ndryshimet e plota të temës ose kërkesave pas nisjes së punës mund të kërkojnë rivlerësim të afatit dhe çmimit.",
+  },
+  {
+    id: "payment",
+    title: "Pagesa dhe këstet",
+    icon: HandCoins,
+    description:
+      "Pagesa kryhet zakonisht në dy këste, sipas dakordësimit me Klientin. Metodat e pagesës përfshijnë Bank Transfer, MoneyGram, Ria dhe Western Union. Detajet e pagesës konfirmohen përpara fillimit të shërbimit.",
+  },
+  {
+    id: "topic",
+    title: "Konfirmimi i temës",
+    icon: FileCheck2,
+    description:
+      "Titulli dhe drejtimi i temës duhet të jenë të miratuara nga pedagogu përpara fillimit të punës. Ndryshimi i plotë i temës pas dorëzimit të pjesës së parë nuk konsiderohet korrigjim i zakonshëm dhe mund të trajtohet si kërkesë e re.",
+  },
+  {
+    id: "privacy",
+    title: "Konfidencialiteti",
+    icon: ShieldCheck,
+    description:
+      "Të dhënat personale, dokumentet dhe informacionet e Klientit trajtohen në mënyrë konfidenciale dhe nuk u shpërndahen palëve të treta, përveç rasteve kur kjo kërkohet me ligj.",
+  },
+  {
+    id: "integrity",
+    title: "Integriteti akademik",
+    icon: Scale,
+    description:
+      "Shërbimi ofron orientim dhe asistencë akademike. Klienti mbetet përgjegjës për përdorimin e materialit, respektimin e rregullores së institucionit dhe paraqitjen e punës në përputhje me standardet e integritetit akademik.",
+  },
+];
+
+function AgreementSectionItem({
+  section,
+  isOpen,
+  onToggle,
 }: {
-  expanded: boolean
-  setExpanded: (v: boolean) => void
-  clientName?: string
-}) => (
-  <div className="space-y-3">
-    <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-5 space-y-4 text-sm">
-      <div>
-        <p className="text-xs text-zinc-500 mb-0.5">Perfaqësues</p>
-        <p className="font-bold text-zinc-900">temadiplome.ce</p>
-        <p className="text-zinc-400 text-xs mt-0.5">
-  Klienti:{" "}
-  <span className="font-semibold text-zinc-700">
-    {clientName || "plotësohet me emrin tuaj pas konfirmimit"}
-  </span>
-</p>
-      </div>
+  section: AgreementSection;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const Icon = section.icon;
 
-      <div>
-        <p className="font-bold text-zinc-900 mb-1.5">Objekti i Marrëveshjes</p>
-        <p className="text-zinc-600 text-xs leading-relaxed">
-          Kjo marrëveshje ka për objekt ofrimin e shërbimeve për hartimin e temave të diplomës dhe detyrave të kursit, të cilat do të kryhen nga faqja jonë për Klientin.
-        </p>
-      </div>
-
-      <div className="space-y-2.5 text-xs text-zinc-600 leading-relaxed">
-        <p><strong className="text-zinc-800">Ndryshimet:</strong> Klienti ka të drejtë të kërkojë ndryshime brenda një muaji nga dorëzimi. Ndryshimet kryhen deri në 3 deri 4 herë.</p>
-        <p><strong className="text-zinc-800">Pagesa:</strong> Pagesa kryhet në dy këste. Detajet specifikohen në bisedë me klientin.</p>
-        <p><strong className="text-zinc-800">Mënyra e Pagesës:</strong> Bank Transfer, MoneyGram, Ria, Western Union.</p>
-        <p><strong className="text-zinc-800">Konfirmimi i Temës:</strong> Titulli i temës duhet të jetë i miratuar nga pedagogi <em>para</em> fillimit të punës. Nëse titulli ndryshon pasi kemi dorëzuar pjesën e parë, nuk kryhen ndryshime nga fillimi dhe nuk kthehet pagesa e kryer.</p>
-        <p><strong className="text-zinc-800">Konfidencialiteti:</strong> Të gjitha informacionet e klientit ruhen me konfidencialitet të plotë.</p>
-      </div>
-
-      {expanded && (
-        <div className="space-y-3 pt-3 border-t border-zinc-200 animate-fade-in">
-          <div>
-            <p className="font-bold text-zinc-900 mb-1">Zbatimi i Marrëveshjes</p>
-            <p className="text-xs text-zinc-600 leading-relaxed">
-              Kjo marrëveshje bëhet aktive pas aprovimit të saj nga të dyja palët dhe mbetet në fuqi deri në përfundimin e shërbimit.
-            </p>
-          </div>
-          <div className="text-xs text-zinc-500 space-y-1 pt-2 border-t border-zinc-200">
-            <p><strong className="text-zinc-700">Nënshkruar nga:</strong> temadiplome.ce</p>
-            <p>
-  <strong className="text-zinc-700">Klienti:</strong>{" "}
-  <span className="font-semibold text-zinc-700">
-    {clientName || "plotësohet me emrin tuaj pas konfirmimit"}
-  </span>
-</p>
-          </div>
-        </div>
-      )}
-
+  return (
+    <article
+      className={`overflow-hidden rounded-[16px] border transition-all duration-200 ${
+        isOpen
+          ? "border-violet-200 bg-violet-50/50 shadow-[0_8px_24px_rgba(109,40,217,0.06)]"
+          : "border-zinc-100 bg-white hover:border-violet-100"
+      }`}
+    >
       <button
         type="button"
-        onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1.5 text-xs text-amber-600 font-semibold hover:text-amber-700 transition-colors"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="flex w-full items-center gap-3 px-4 py-3.5 text-left"
       >
-        {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        {expanded ? 'Shfaq më pak' : 'Lexo të plotën'}
-      </button>
-    </div>
+        <div
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
+            isOpen
+              ? "bg-violet-700 text-white"
+              : "bg-violet-50 text-violet-700"
+          }`}
+        >
+          <Icon className="h-4 w-4" />
+        </div>
 
-    <div className="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-3.5">
-      <Shield className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-      <p className="text-xs text-green-800 leading-relaxed">
-        <strong>100% Konfidencial.</strong> Informacioni juaj nuk ndahet me asnjë palë të tretë.
+        <span className="min-w-0 flex-1 text-sm font-bold text-zinc-900">
+          {section.title}
+        </span>
+
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 ${
+            isOpen ? "rotate-180 text-violet-700" : ""
+          }`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="animate-fade-in px-4 pb-4 pl-[64px]">
+          <p className="text-xs leading-6 text-zinc-600 sm:text-sm">
+            {section.description}
+          </p>
+        </div>
+      )}
+    </article>
+  );
+}
+
+function TermsContent({
+  clientName,
+  openSection,
+  setOpenSection,
+}: {
+  clientName?: string;
+  openSection: string | null;
+  setOpenSection: (section: string | null) => void;
+}) {
+  const resolvedClientName =
+    clientName?.trim() || "Plotësohet automatikisht nga profili juaj";
+
+  return (
+    <div>
+      {/* PARTIES */}
+      <section className="rounded-[20px] border border-violet-100 bg-gradient-to-br from-violet-50/80 via-white to-purple-50/40 p-4 sm:p-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600">
+          Palët e marrëveshjes
+        </p>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="flex min-w-0 items-center gap-3 rounded-[15px] border border-white bg-white/90 p-3 shadow-sm">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+              <FileCheck2 className="h-5 w-5" />
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-[10px] text-zinc-400">Përfaqësuesi</p>
+              <p className="truncate text-sm font-bold text-zinc-950">
+                temadiplome.ce
+              </p>
+            </div>
+          </div>
+
+          <div className="flex min-w-0 items-center gap-3 rounded-[15px] border border-white bg-white/90 p-3 shadow-sm">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+              <UserRound className="h-5 w-5" />
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-[10px] text-zinc-400">Klienti</p>
+              <p className="break-words text-sm font-bold text-zinc-950">
+                {resolvedClientName}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AGREEMENT SECTIONS */}
+      <section className="mt-4 space-y-2.5">
+        {agreementSections.map((section) => (
+          <AgreementSectionItem
+            key={section.id}
+            section={section}
+            isOpen={openSection === section.id}
+            onToggle={() =>
+              setOpenSection(
+                openSection === section.id ? null : section.id
+              )
+            }
+          />
+        ))}
+      </section>
+
+      {/* VALIDITY */}
+      <section className="mt-4 rounded-[16px] border border-emerald-100 bg-emerald-50/70 p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <ShieldCheck className="h-4 w-4" />
+          </div>
+
+          <div>
+            <p className="text-sm font-bold text-emerald-900">
+              Konfidencialitet dhe siguri
+            </p>
+
+            <p className="mt-1 text-xs leading-5 text-emerald-800">
+              Informacionet dhe dokumentet e dërguara ruhen me
+              konfidencialitet dhe përdoren vetëm për realizimin e shërbimit
+              të konfirmuar.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <p className="mt-4 text-center text-[10px] leading-4 text-zinc-400">
+        Marrëveshja bëhet aktive pas pranimit elektronik nga Klienti dhe
+        konfirmimit të shërbimit nga temadiplome.ce.
       </p>
     </div>
-  </div>
-)
+  );
+}
 
-export default function TermsPopup({ inline = false, onAccept, clientName }: Props) {  const [visible, setVisible] = useState(false)
-  const [checked, setChecked] = useState(false)
-  const [shake, setShake] = useState(false)
-  const [expanded, setExpanded] = useState(false)
+export default function TermsPopup({
+  inline = false,
+  onAccept,
+  clientName,
+}: Props) {
+  const [visible, setVisible] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [shake, setShake] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>("object");
 
   useEffect(() => {
-    if (inline) return
+    if (inline) return;
+
     if (!localStorage.getItem(STORAGE_KEY)) {
-      const t = setTimeout(() => setVisible(true), 700)
-      return () => clearTimeout(t)
+      const timer = window.setTimeout(() => {
+        setVisible(true);
+      }, 700);
+
+      return () => window.clearTimeout(timer);
     }
-  }, [inline])
+  }, [inline]);
 
   const handleCheck = () => {
-    setChecked(prev => {
-      const next = !prev
-      if (next) onAccept?.()
-      return next
-    })
-  }
+    setChecked((previous) => {
+      const nextValue = !previous;
+
+      if (nextValue) {
+        setShake(false);
+        onAccept?.();
+      }
+
+      return nextValue;
+    });
+  };
 
   const agree = () => {
     if (!checked) {
-      setShake(true)
-      setTimeout(() => setShake(false), 500)
-      return
-    }
-    localStorage.setItem(STORAGE_KEY, '1')
-    setVisible(false)
-  }
+      setShake(true);
 
-  const footer = (
-    <div className="space-y-3">
-      <label className="flex items-start gap-3 cursor-pointer">
-        <button
-          type="button"
-          onClick={handleCheck}
-          className={`w-5 h-5 rounded-md border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-all ${
-            checked ? 'bg-amber-400 border-amber-400' : shake ? 'border-red-400 bg-red-50' : 'border-zinc-300 hover:border-amber-400'
+      window.setTimeout(() => {
+        setShake(false);
+      }, 500);
+
+      return;
+    }
+
+    localStorage.setItem(STORAGE_KEY, "1");
+    setVisible(false);
+    onAccept?.();
+  };
+
+  const acceptanceControl = (
+    <div>
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        onClick={handleCheck}
+        className={`flex w-full items-start gap-3 rounded-[16px] border p-4 text-left transition-all ${
+          checked
+            ? "border-violet-200 bg-violet-50"
+            : shake
+              ? "border-red-300 bg-red-50"
+              : "border-zinc-200 bg-white hover:border-violet-200"
+        }`}
+      >
+        <span
+          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
+            checked
+              ? "border-violet-700 bg-violet-700"
+              : shake
+                ? "border-red-400 bg-white"
+                : "border-zinc-300 bg-white"
           }`}
         >
-          {checked && <CheckCircle2 className="w-3.5 h-3.5 text-zinc-900" />}
-        </button>
-        <span className={`text-sm leading-relaxed ${shake && !checked ? 'text-red-600' : 'text-zinc-700'}`}>
-          Kam lexuar, kuptuar dhe pranoj <strong>Marrëveshjen e Bashkëpunimit</strong> me temadiplome.ce.
+          {checked && <Check className="h-3.5 w-3.5 text-white" />}
         </span>
-      </label>
+
+        <span
+          className={`text-xs leading-5 sm:text-sm sm:leading-6 ${
+            shake && !checked ? "text-red-700" : "text-zinc-700"
+          }`}
+        >
+          Kam lexuar, kuptuar dhe pranoj{" "}
+          <strong className="text-zinc-950">
+            Marrëveshjen e Bashkëpunimit
+          </strong>{" "}
+          me temadiplome.ce.
+        </span>
+      </button>
+
       {shake && !checked && (
-        <p className="text-xs text-red-500">Duhet të pranosh kushtet për të vazhduar.</p>
+        <p className="mt-2 text-xs font-medium text-red-600">
+          Duhet të pranosh marrëveshjen për të vazhduar.
+        </p>
       )}
     </div>
-  )
+  );
 
-  // Inline version — rendered inside the order form
+  // VERSIONI BRENDA FORMULARIT
   if (inline) {
     return (
-      <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-xl bg-amber-400 flex items-center justify-center flex-shrink-0">
-            <FileText className="w-4 h-4 text-zinc-900" />
+      <section className="overflow-hidden rounded-[22px] border border-violet-100 bg-white shadow-[0_12px_36px_rgba(76,29,149,0.05)]">
+        <header className="flex items-center gap-3 border-b border-violet-100 bg-gradient-to-r from-violet-50/80 to-white px-4 py-4 sm:px-5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-700 to-purple-500 text-white shadow-lg shadow-violet-200">
+            <FileText className="h-5 w-5" />
           </div>
-          <p className="font-serif font-bold text-zinc-900 text-base">Marrëveshja e Bashkëpunimit</p>
+
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">
+              Konfirmimi
+            </p>
+
+            <h2 className="font-serif text-lg font-bold text-zinc-950">
+              Marrëveshja e Bashkëpunimit
+            </h2>
+          </div>
+        </header>
+
+        <div className="p-4 sm:p-5">
+          <TermsContent
+            clientName={clientName}
+            openSection={openSection}
+            setOpenSection={setOpenSection}
+          />
+
+          <div className="mt-5">{acceptanceControl}</div>
         </div>
-        <TermsContent
-  expanded={expanded}
-  setExpanded={setExpanded}
-  clientName={clientName}
-/>
-<div className="mt-4">{footer}</div>
-      </div>
-    )
+      </section>
+    );
   }
 
-  // Full-screen popup
-  if (!visible) return null
+  if (!visible) return null;
 
+  // POPUP
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[92svh]">
+    <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-zinc-950/65 backdrop-blur-sm sm:items-center sm:p-4">
+      <button
+        type="button"
+        aria-label="Mbyll marrëveshjen"
+        onClick={() => setVisible(false)}
+        className="absolute inset-0"
+      />
 
-        {/* Header */}
-        <div className="bg-zinc-950 px-6 pt-5 pb-5 flex-shrink-0 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center flex-shrink-0">
-              <FileText className="w-5 h-5 text-zinc-900" />
+      <section className="animate-slide-up relative flex max-h-[94svh] w-full flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl sm:max-w-[680px] sm:rounded-[26px]">
+        {/* HEADER */}
+        <header className="shrink-0 border-b border-violet-100 bg-gradient-to-r from-violet-50 via-white to-purple-50 px-5 py-4 sm:px-6 sm:py-5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 to-purple-500 text-white shadow-lg shadow-violet-200">
+                <FileCheck2 className="h-5 w-5" />
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-violet-600 sm:text-[10px]">
+                  Konfirmim elektronik
+                </p>
+
+                <h2 className="truncate font-serif text-lg font-bold text-zinc-950 sm:text-xl">
+                  Marrëveshja e Bashkëpunimit
+                </h2>
+
+                <p className="mt-0.5 text-[10px] text-zinc-500 sm:text-xs">
+                  Lexoje përpara se të vazhdosh.
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-serif text-lg font-bold text-white">Marrëveshje Bashkëpunimi</h2>
-              <p className="text-zinc-500 text-xs mt-0.5">temadiplome.ce — Lexo para se të vazhdosh.</p>
-            </div>
+
+            <button
+              type="button"
+              onClick={() => setVisible(false)}
+              aria-label="Mbyll"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-500 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            onClick={() => setVisible(false)}
-            className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors ml-3 flex-shrink-0"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        </header>
+
+        {/* SCROLLABLE BODY */}
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">
+          <TermsContent
+            clientName={clientName}
+            openSection={openSection}
+            setOpenSection={setOpenSection}
+          />
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-         <TermsContent
-  expanded={expanded}
-  setExpanded={setExpanded}
-  clientName={clientName}
-/>   
-     </div>
+        {/* STICKY FOOTER */}
+        <footer className="shrink-0 border-t border-zinc-100 bg-white px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_36px_rgba(24,24,27,0.07)] sm:px-6 sm:pb-5">
+          {acceptanceControl}
 
-        {/* Footer */}
-        <div className="px-6 pb-6 pt-4 border-t border-zinc-100 flex-shrink-0 bg-white space-y-4">
-          {footer}
           <button
+            type="button"
             onClick={agree}
-            className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-sm transition-all ${
+            disabled={!checked}
+            className={`mt-3 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold transition-all ${
               checked
-                ? 'bg-amber-400 text-zinc-900 hover:bg-amber-300 active:scale-95'
-                : 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
+                ? "bg-gradient-to-r from-violet-700 to-purple-600 text-white shadow-lg shadow-violet-200/70 hover:-translate-y-0.5"
+                : "cursor-not-allowed bg-zinc-100 text-zinc-400"
             }`}
           >
-            <CheckCircle2 className="w-4 h-4" />
+            <CheckCircle2 className="h-4 w-4" />
             Pranoj dhe vazhdoj
           </button>
-          <button onClick={() => setVisible(false)} className="w-full text-xs text-zinc-400 hover:text-zinc-600 transition-colors py-1">
-            Mbyll
+
+          <button
+            type="button"
+            onClick={() => setVisible(false)}
+            className="mt-2 w-full py-1.5 text-xs font-medium text-zinc-400 transition hover:text-zinc-700"
+          >
+            Mbyll pa pranuar
           </button>
-        </div>
-      </div>
+        </footer>
+      </section>
     </div>
-  )
+  );
 }

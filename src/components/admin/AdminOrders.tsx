@@ -1,5 +1,20 @@
-import { useEffect, useState } from "react";
-import { Download, Eye, RefreshCw, Save, Upload, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  Download,
+  Eye,
+  FileCheck2,
+  List,
+  RefreshCw,
+  Save,
+  Search,
+  Upload,
+  X,
+} from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
 interface Order {
@@ -26,6 +41,8 @@ interface Order {
   created_at: string;
 }
 
+type ViewMode = "list" | "calendar";
+
 const statuses = [
   { value: "received", label: "Porosia u mor" },
   { value: "in_progress", label: "Në proces" },
@@ -36,28 +53,48 @@ const statuses = [
 ];
 
 const statusColors: Record<string, string> = {
-  received: "bg-blue-100 text-blue-700",
-  in_progress: "bg-purple-100 text-purple-700",
-  review: "bg-amber-100 text-amber-700",
-  completed: "bg-green-100 text-green-700",
-  delivered: "bg-emerald-100 text-emerald-700",
-  cancelled: "bg-red-100 text-red-700",
+  received: "border-blue-200 bg-blue-50 text-blue-700",
+  in_progress: "border-violet-200 bg-violet-50 text-violet-700",
+  review: "border-amber-200 bg-amber-50 text-amber-700",
+  completed: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  delivered: "border-sky-200 bg-sky-50 text-sky-700",
+  cancelled: "border-red-200 bg-red-50 text-red-700",
 };
 
+const weekDays = ["Hën", "Mar", "Mër", "Enj", "Pre", "Sht", "Die"];
+
 function statusLabel(value?: string) {
-  return statuses.find((s) => s.value === value)?.label || "Porosia u mor";
+  return statuses.find((status) => status.value === value)?.label || "Porosia u mor";
 }
+
+function toLocalDate(value?: string) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatDate(value?: string) {
+  const date = toLocalDate(value);
+  if (!date) return "—";
+
+  return date.toLocaleDateString("sq-AL", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 function getDaysUntilDeadline(deadline?: string) {
-  if (!deadline) return null;
+  const deadlineDate = toLocalDate(deadline);
+  if (!deadlineDate) return null;
 
   const today = new Date();
-  const deadlineDate = new Date(deadline);
-
   today.setHours(0, 0, 0, 0);
   deadlineDate.setHours(0, 0, 0, 0);
 
-  const diffTime = deadlineDate.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.ceil(
+    (deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+  );
 }
 
 function getUrgency(deadline?: string) {
@@ -65,87 +102,132 @@ function getUrgency(deadline?: string) {
 
   if (days === null) {
     return {
+      level: "none",
       label: "Pa afat",
-      className: "bg-zinc-100 text-zinc-600",
+      className: "border-zinc-200 bg-zinc-50 text-zinc-600",
     };
   }
 
   if (days < 0) {
     return {
+      level: "overdue",
       label: "Afati ka kaluar",
-      className: "bg-red-100 text-red-700",
+      className: "border-red-200 bg-red-50 text-red-700",
     };
   }
 
   if (days === 0) {
     return {
+      level: "today",
       label: "Urgjente sot",
-      className: "bg-red-100 text-red-700",
+      className: "border-red-200 bg-red-50 text-red-700",
     };
   }
 
   if (days <= 2) {
     return {
+      level: "urgent",
       label: `Urgjente: ${days} ditë`,
-      className: "bg-orange-100 text-orange-700",
+      className: "border-orange-200 bg-orange-50 text-orange-700",
     };
   }
 
   if (days <= 7) {
     return {
+      level: "week",
       label: `Këtë javë: ${days} ditë`,
-      className: "bg-amber-100 text-amber-700",
+      className: "border-amber-200 bg-amber-50 text-amber-700",
     };
   }
 
   return {
+    level: "later",
     label: `Më vonë: ${days} ditë`,
-    className: "bg-green-100 text-green-700",
+    className: "border-emerald-200 bg-emerald-50 text-emerald-700",
   };
+}
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function endOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+function addMonths(date: Date, amount: number) {
+  return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
+function sameDay(first: Date, second: Date) {
+  return (
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
+  );
+}
+
+function formatCalendarMonth(date: Date) {
+  return date.toLocaleDateString("sq-AL", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function calendarEventClass(deadline?: string) {
+  const urgency = getUrgency(deadline);
+
+  if (urgency.level === "overdue" || urgency.level === "today") {
+    return "border-red-200 bg-red-50 text-red-700 hover:bg-red-100";
+  }
+
+  if (urgency.level === "urgent") {
+    return "border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100";
+  }
+
+  if (urgency.level === "week") {
+    return "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100";
+  }
+
+  return "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100";
 }
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filter, setFilter] = useState("all");
+  const [query, setQuery] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [calendarDate, setCalendarDate] = useState(new Date());
   const [selected, setSelected] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
-const deadlineOrders = [...orders]
-  .filter((order) => order.order_status !== "completed" && order.order_status !== "delivered")
-  .sort((a, b) => {
-    if (!a.deadline) return 1;
-    if (!b.deadline) return -1;
 
-    return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-  });
   const load = async () => {
+    setLoading(true);
     setMessage("");
 
-    let q = supabase
+    const { data, error } = await supabase
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (filter !== "all") {
-      q = q.eq("order_status", filter);
-    }
-
-    const { data, error } = await q;
-
     if (error) {
       console.error("Orders load error:", error);
       setMessage("Nuk u ngarkuan porositë.");
+      setLoading(false);
       return;
     }
 
     setOrders((data || []) as Order[]);
+    setLoading(false);
   };
 
   useEffect(() => {
     load();
-  }, [filter]);
+  }, []);
 
-  const updateSelected = (field: keyof Order, value: any) => {
+  const updateSelected = <K extends keyof Order>(field: K, value: Order[K]) => {
     if (!selected) return;
 
     setSelected({
@@ -176,8 +258,8 @@ const deadlineOrders = [...orders]
       return;
     }
 
-    setOrders((prev) =>
-      prev.map((order) =>
+    setOrders((previous) =>
+      previous.map((order) =>
         order.id === selected.id
           ? {
               ...order,
@@ -198,14 +280,12 @@ const deadlineOrders = [...orders]
     setSaving(true);
     setMessage("");
 
-    const ext = file.name.split(".").pop();
-    const fileName = `${selected.id}_${Date.now()}.${ext}`;
+    const extension = file.name.split(".").pop();
+    const fileName = `${selected.id}_${Date.now()}.${extension}`;
 
     const { error: uploadError } = await supabase.storage
       .from("completed-files")
-      .upload(fileName, file, {
-        upsert: true,
-      });
+      .upload(fileName, file, { upsert: true });
 
     if (uploadError) {
       console.error("Final file upload error:", uploadError);
@@ -235,7 +315,7 @@ const deadlineOrders = [...orders]
       return;
     }
 
-    const updatedOrder = {
+    const updatedOrder: Order = {
       ...selected,
       order_status: "completed",
       final_file_url: urlData.publicUrl,
@@ -243,355 +323,833 @@ const deadlineOrders = [...orders]
     };
 
     setSelected(updatedOrder);
-
-    setOrders((prev) =>
-      prev.map((order) => (order.id === selected.id ? updatedOrder : order))
+    setOrders((previous) =>
+      previous.map((order) => (order.id === selected.id ? updatedOrder : order))
     );
-
-    setMessage("Punimi final u ngarkua. Studenti mund ta shkarkojë nga Dashboard.");
+    setMessage(
+      "Punimi final u ngarkua. Studenti mund ta shkarkojë nga Dashboard."
+    );
     setSaving(false);
   };
 
+  const filteredOrders = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return orders.filter((order) => {
+      const currentStatus = order.order_status || "received";
+      const matchesFilter = filter === "all" || currentStatus === filter;
+
+      if (!matchesFilter) return false;
+      if (!normalizedQuery) return true;
+
+      return [
+        order.full_name,
+        order.email,
+        order.phone,
+        order.topic,
+        order.work_type,
+        order.subject_area,
+        order.university,
+      ]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedQuery));
+    });
+  }, [orders, filter, query]);
+
+  const activeDeadlineOrders = useMemo(
+    () =>
+      [...orders]
+        .filter((order) => {
+          const status = order.order_status || "received";
+          return !["completed", "delivered", "cancelled"].includes(status);
+        })
+        .filter((order) => Boolean(order.deadline))
+        .sort((first, second) => {
+          const firstDate = toLocalDate(first.deadline)?.getTime() ?? Infinity;
+          const secondDate = toLocalDate(second.deadline)?.getTime() ?? Infinity;
+          return firstDate - secondDate;
+        }),
+    [orders]
+  );
+
+  const urgentCount = activeDeadlineOrders.filter((order) => {
+    const days = getDaysUntilDeadline(order.deadline);
+    return days !== null && days <= 2;
+  }).length;
+
+  const inProgressCount = orders.filter((order) =>
+    ["in_progress", "review"].includes(order.order_status || "received")
+  ).length;
+
+  const completedCount = orders.filter(
+    (order) => (order.order_status || "received") === "completed"
+  ).length;
+
+  const deliveredCount = orders.filter(
+    (order) => (order.order_status || "received") === "delivered"
+  ).length;
+
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: orders.length };
+
+    statuses.forEach((status) => {
+      counts[status.value] = orders.filter(
+        (order) => (order.order_status || "received") === status.value
+      ).length;
+    });
+
+    return counts;
+  }, [orders]);
+
+  const monthStart = startOfMonth(calendarDate);
+  const monthEnd = endOfMonth(calendarDate);
+  const firstDayIndex = (monthStart.getDay() + 6) % 7;
+  const daysInMonth = monthEnd.getDate();
+
+  const calendarDays = Array.from(
+    { length: Math.ceil((firstDayIndex + daysInMonth) / 7) * 7 },
+    (_, index) => {
+      const dayNumber = index - firstDayIndex + 1;
+
+      if (dayNumber < 1 || dayNumber > daysInMonth) return null;
+
+      return new Date(
+        calendarDate.getFullYear(),
+        calendarDate.getMonth(),
+        dayNumber
+      );
+    }
+  );
+
+  const ordersForDay = (date: Date) =>
+    filteredOrders.filter((order) => {
+      const deadline = toLocalDate(order.deadline);
+      return deadline ? sameDay(deadline, date) : false;
+    });
+
+  const openOrder = (order: Order) => {
+    setSelected({
+      ...order,
+      order_status: order.order_status || "received",
+    });
+  };
+
   return (
-    <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <h1 className="font-serif text-xl font-bold text-zinc-900">
-          Porositë ({orders.length})
-        </h1>
+    <div className="space-y-5">
+      {/* HEADER */}
+      <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600">
+            Menaxhimi i porosive
+          </p>
+
+          <h1 className="mt-1 font-serif text-3xl font-bold text-zinc-950">
+            Porositë
+          </h1>
+
+          <p className="mt-1 text-sm text-zinc-500">
+            Menaxho kërkesat, afatet, statuset dhe materialet finale.
+          </p>
+        </div>
 
         <button
           type="button"
           onClick={load}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-zinc-200 bg-white text-xs font-semibold text-zinc-600 hover:bg-zinc-50"
+          disabled={loading}
+          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:opacity-60"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
-          Rifresko
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          {loading ? "Duke rifreskuar..." : "Rifresko"}
         </button>
-      </div>
+      </section>
 
       {message && (
-        <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl text-sm">
+        <div className="rounded-[16px] border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-800">
           {message}
         </div>
       )}
-<div className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-5 mb-5">
-  <div className="flex items-center justify-between gap-3 mb-4">
-    <div>
-      <h2 className="font-serif text-xl font-bold text-zinc-900">
-        Kalendari i afateve
-      </h2>
-      <p className="text-sm text-zinc-500 mt-1">
-        Porositë renditen automatikisht sipas datës së dorëzimit.
-      </p>
-    </div>
-  </div>
 
-  {deadlineOrders.length === 0 ? (
-    <p className="text-sm text-zinc-400">
-      Nuk ka porosi aktive me afat dorëzimi.
-    </p>
-  ) : (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-      {deadlineOrders.slice(0, 6).map((order) => {
-        const urgency = getUrgency(order.deadline);
+      {/* STATS */}
+      <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        {[
+          {
+            label: "Urgjente",
+            value: urgentCount,
+            icon: AlertTriangle,
+            cardClass: "border-red-100 bg-red-50/60",
+            iconClass: "bg-white text-red-600",
+            labelClass: "text-red-600",
+          },
+          {
+            label: "Në proces",
+            value: inProgressCount,
+            icon: Clock3,
+            cardClass: "border-violet-100 bg-violet-50/60",
+            iconClass: "bg-white text-violet-600",
+            labelClass: "text-violet-600",
+          },
+          {
+            label: "Përfunduar",
+            value: completedCount,
+            icon: FileCheck2,
+            cardClass: "border-emerald-100 bg-emerald-50/60",
+            iconClass: "bg-white text-emerald-600",
+            labelClass: "text-emerald-600",
+          },
+          {
+            label: "Dorëzuar",
+            value: deliveredCount,
+            icon: Eye,
+            cardClass: "border-blue-100 bg-blue-50/60",
+            iconClass: "bg-white text-blue-600",
+            labelClass: "text-blue-600",
+          },
+        ].map((stat) => {
+          const Icon = stat.icon;
 
-        return (
-          <button
-            key={order.id}
-            type="button"
-            onClick={() =>
-              setSelected({
-                ...order,
-                order_status: order.order_status || "received",
-              })
-            }
-            className="text-left rounded-2xl border border-zinc-100 bg-zinc-50 hover:bg-amber-50 hover:border-amber-200 transition-colors p-4"
-          >
-            <div className="flex items-start justify-between gap-3 mb-2">
+          return (
+            <article
+              key={stat.label}
+              className={`flex items-center justify-between rounded-[22px] border p-5 shadow-[0_12px_32px_rgba(24,24,27,0.03)] ${stat.cardClass}`}
+            >
               <div>
-                <p className="font-semibold text-zinc-900 text-sm">
-                  {order.full_name}
+                <p
+                  className={`text-[10px] font-bold uppercase tracking-[0.18em] ${stat.labelClass}`}
+                >
+                  {stat.label}
                 </p>
-                <p className="text-xs text-zinc-500">
-                  {order.deadline
-                    ? new Date(order.deadline).toLocaleDateString("sq-AL")
-                    : "Pa afat"}
+
+                <p className="mt-3 font-serif text-3xl font-bold text-zinc-950">
+                  {stat.value}
                 </p>
               </div>
 
-              <span
-                className={`text-[11px] font-bold px-2 py-1 rounded-full ${urgency.className}`}
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-2xl shadow-sm ${stat.iconClass}`}
               >
-                {urgency.label}
+                <Icon className="h-5 w-5" />
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      {/* CONTROLS */}
+      <section className="rounded-[22px] border border-zinc-100 bg-white p-4 shadow-[0_14px_40px_rgba(24,24,27,0.04)]">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
+                viewMode === "list"
+                  ? "bg-gradient-to-r from-violet-700 to-purple-600 text-white shadow-lg shadow-violet-200/60"
+                  : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
+              }`}
+            >
+              <List className="h-4 w-4" />
+              Lista
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode("calendar")}
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
+                viewMode === "calendar"
+                  ? "bg-gradient-to-r from-violet-700 to-purple-600 text-white shadow-lg shadow-violet-200/60"
+                  : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
+              }`}
+            >
+              <CalendarDays className="h-4 w-4" />
+              Kalendari
+            </button>
+          </div>
+
+          <div className="relative w-full xl:max-w-sm">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Kërko emër, email, temë..."
+              className="w-full rounded-xl border border-zinc-200 bg-zinc-50 py-3 pl-11 pr-4 text-sm outline-none transition placeholder:text-zinc-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {["all", ...statuses.map((status) => status.value)].map((status) => (
+            <button
+              key={status}
+              type="button"
+              onClick={() => setFilter(status)}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold transition ${
+                filter === status
+                  ? "border-violet-700 bg-violet-700 text-white"
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+              }`}
+            >
+              {status === "all" ? "Të gjitha" : statusLabel(status)}
+
+              <span
+                className={`rounded-full px-2 py-0.5 text-[10px] ${
+                  filter === status ? "bg-white/15 text-white" : "bg-zinc-100 text-zinc-500"
+                }`}
+              >
+                {statusCounts[status] || 0}
               </span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* CONTENT */}
+      {viewMode === "calendar" ? (
+        <section className="overflow-hidden rounded-[24px] border border-zinc-100 bg-white shadow-[0_16px_48px_rgba(24,24,27,0.05)]">
+          <div className="flex flex-col gap-4 border-b border-zinc-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600">
+                Afatet e porosive
+              </p>
+
+              <h2 className="mt-1 font-serif text-2xl font-bold capitalize text-zinc-950">
+                {formatCalendarMonth(calendarDate)}
+              </h2>
+
+              <p className="mt-1 text-sm text-zinc-500">
+                Kliko mbi një porosi për të parë ose ndryshuar detajet.
+              </p>
             </div>
 
-            <p className="text-xs text-zinc-600 line-clamp-2">
-              {order.topic || order.description || "Pa përshkrim"}
-            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCalendarDate(addMonths(calendarDate, -1))}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 transition hover:bg-zinc-50"
+                aria-label="Muaji i mëparshëm"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
 
-            <p className="text-[11px] text-zinc-400 mt-2">
-              {order.work_type} · {statusLabel(order.order_status)}
-            </p>
-          </button>
-        );
-      })}
-    </div>
-  )}
-</div>
-      <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
-        {["all", ...statuses.map((s) => s.value)].map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
-              filter === s
-                ? "bg-zinc-900 text-white"
-                : "bg-white text-zinc-600 border border-zinc-200"
-            }`}
-          >
-            {s === "all" ? "Të gjitha" : statusLabel(s)}
-          </button>
-        ))}
-      </div>
+              <button
+                type="button"
+                onClick={() => setCalendarDate(new Date())}
+                className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
+              >
+                Sot
+              </button>
 
-      <div className="space-y-3">
-        {orders.map((o) => {
-          const currentStatus = o.order_status || "received";
+              <button
+                type="button"
+                onClick={() => setCalendarDate(addMonths(calendarDate, 1))}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 transition hover:bg-zinc-50"
+                aria-label="Muaji i ardhshëm"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
 
-          return (
-            <div
-              key={o.id}
-              className="bg-white rounded-2xl border border-zinc-100 p-5 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-zinc-900 text-sm">
-                    {o.full_name}
-                  </p>
+          {/* DESKTOP CALENDAR */}
+          <div className="hidden md:block">
+            <div className="grid grid-cols-7 border-b border-zinc-100 bg-zinc-50/80">
+              {weekDays.map((day) => (
+                <div
+                  key={day}
+                  className="border-r border-zinc-100 px-2 py-3 text-center text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500 last:border-r-0"
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
 
-                  <p className="text-xs text-zinc-400 mt-0.5">
-                    {o.email} · {o.phone}
-                  </p>
+            <div className="grid grid-cols-7">
+              {calendarDays.map((date, index) => {
+                if (!date) {
+                  return (
+                    <div
+                      key={`empty-${index}`}
+                      className="min-h-[145px] border-b border-r border-zinc-100 bg-zinc-50/40"
+                    />
+                  );
+                }
 
-                  <p className="text-xs text-zinc-600 mt-2 line-clamp-2">
-                    {o.topic || "Pa temë"}
-                  </p>
+                const dayOrders = ordersForDay(date);
+                const isToday = sameDay(date, new Date());
 
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    <span className="text-xs bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full">
-                      {o.work_type}
-                    </span>
+                return (
+                  <div
+                    key={date.toISOString()}
+                    className="min-h-[145px] border-b border-r border-zinc-100 p-2.5"
+                  >
+                    <div className="mb-2 flex items-center justify-between">
+                      <span
+                        className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+                          isToday ? "bg-violet-700 text-white" : "text-zinc-700"
+                        }`}
+                      >
+                        {date.getDate()}
+                      </span>
 
-                    <span className="text-xs bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full">
-                      {o.subject_area}
-                    </span>
+                      {dayOrders.length > 0 && (
+                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-700">
+                          {dayOrders.length}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      {dayOrders.slice(0, 3).map((order) => (
+                        <button
+                          key={order.id}
+                          type="button"
+                          onClick={() => openOrder(order)}
+                          className={`w-full rounded-lg border px-2 py-1.5 text-left text-[10px] leading-4 transition ${calendarEventClass(
+                            order.deadline
+                          )}`}
+                        >
+                          <span className="block truncate font-bold">
+                            {order.full_name}
+                          </span>
+
+                          <span className="block truncate opacity-80">
+                            {order.topic || order.work_type || "Pa temë"}
+                          </span>
+                        </button>
+                      ))}
+
+                      {dayOrders.length > 3 && (
+                        <p className="px-1 text-[10px] font-medium text-zinc-400">
+                          +{dayOrders.length - 3} të tjera
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* MOBILE DEADLINE LIST */}
+          <div className="space-y-3 p-4 md:hidden">
+            {activeDeadlineOrders.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-zinc-200 px-5 py-10 text-center text-sm text-zinc-400">
+                Nuk ka porosi aktive me afat.
+              </div>
+            ) : (
+              activeDeadlineOrders.map((order) => {
+                const urgency = getUrgency(order.deadline);
+
+                return (
+                  <button
+                    key={order.id}
+                    type="button"
+                    onClick={() => openOrder(order)}
+                    className="w-full rounded-[18px] border border-zinc-100 bg-white p-4 text-left shadow-sm transition hover:border-violet-200"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-bold text-zinc-950">
+                          {order.full_name}
+                        </p>
+
+                        <p className="mt-1 text-xs text-zinc-500">
+                          {formatDate(order.deadline)}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold ${urgency.className}`}
+                      >
+                        {urgency.label}
+                      </span>
+                    </div>
+
+                    <p className="mt-3 line-clamp-2 text-xs leading-5 text-zinc-600">
+                      {order.topic || order.description || "Pa përshkrim"}
+                    </p>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </section>
+      ) : (
+        <section className="overflow-hidden rounded-[24px] border border-zinc-100 bg-white shadow-[0_16px_48px_rgba(24,24,27,0.05)]">
+          {/* DESKTOP TABLE */}
+          <div className="hidden lg:block">
+            <div className="grid grid-cols-[1.05fr_1.45fr_0.82fr_0.86fr_58px] gap-4 border-b border-zinc-100 bg-zinc-50/80 px-5 py-4 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+              <span>Studenti</span>
+              <span>Porosia</span>
+              <span>Afati</span>
+              <span>Statusi</span>
+              <span />
+            </div>
+
+            {filteredOrders.map((order) => {
+              const currentStatus = order.order_status || "received";
+              const urgency = getUrgency(order.deadline);
+
+              return (
+                <article
+                  key={order.id}
+                  className="grid grid-cols-[1.05fr_1.45fr_0.82fr_0.86fr_58px] items-center gap-4 border-b border-zinc-100 px-5 py-5 last:border-b-0 hover:bg-violet-50/25"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold text-zinc-950">
+                      {order.full_name}
+                    </p>
+
+                    <p className="mt-1 truncate text-xs text-zinc-400">
+                      {order.email}
+                    </p>
+
+                    <p className="mt-0.5 truncate text-[11px] text-zinc-400">
+                      {order.phone}
+                    </p>
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="line-clamp-2 break-words text-sm font-semibold leading-5 text-zinc-900">
+                      {order.topic || "Pa temë"}
+                    </p>
+
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {order.work_type && (
+                        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] text-zinc-600">
+                          {order.work_type}
+                        </span>
+                      )}
+
+                      {order.subject_area && (
+                        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] text-zinc-600">
+                          {order.subject_area}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-800">
+                      {formatDate(order.deadline)}
+                    </p>
 
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold ${urgency.className}`}
+                    >
+                      {urgency.label}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span
+                      className={`inline-flex rounded-full border px-3 py-1.5 text-[10px] font-bold ${
                         statusColors[currentStatus] || statusColors.received
                       }`}
                     >
                       {statusLabel(currentStatus)}
                     </span>
+
+                    <p className="mt-2 text-[10px] text-zinc-400">
+                      Krijuar: {formatDate(order.created_at)}
+                    </p>
                   </div>
 
-                  <p className="text-xs text-zinc-400 mt-1.5">
-                    {o.created_at
-                      ? new Date(o.created_at).toLocaleDateString("sq-AL")
-                      : ""}
-                  </p>
-                </div>
+                  <button
+                    type="button"
+                    onClick={() => openOrder(order)}
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 text-violet-700 transition hover:bg-violet-100"
+                    aria-label={`Shiko porosinë e ${order.full_name}`}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                </article>
+              );
+            })}
+          </div>
 
-                <button
-                  onClick={() =>
-                    setSelected({
-                      ...o,
-                      order_status: o.order_status || "received",
-                    })
-                  }
-                  className="flex-shrink-0 w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600"
+          {/* MOBILE / TABLET CARDS */}
+          <div className="space-y-3 p-4 lg:hidden">
+            {filteredOrders.map((order) => {
+              const currentStatus = order.order_status || "received";
+              const urgency = getUrgency(order.deadline);
+
+              return (
+                <article
+                  key={order.id}
+                  className="rounded-[18px] border border-zinc-100 bg-white p-4 shadow-sm"
                 >
-                  <Eye className="w-4 h-4" />
-                </button>
-              </div>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold text-zinc-950">
+                        {order.full_name}
+                      </p>
+
+                      <p className="mt-1 truncate text-xs text-zinc-400">
+                        {order.email}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => openOrder(order)}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <p className="mt-4 line-clamp-2 break-words text-sm font-semibold leading-5 text-zinc-800">
+                    {order.topic || "Pa temë"}
+                  </p>
+
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    <span
+                      className={`rounded-full border px-2.5 py-1 text-[10px] font-bold ${
+                        statusColors[currentStatus] || statusColors.received
+                      }`}
+                    >
+                      {statusLabel(currentStatus)}
+                    </span>
+
+                    <span
+                      className={`rounded-full border px-2.5 py-1 text-[10px] font-bold ${urgency.className}`}
+                    >
+                      {urgency.label}
+                    </span>
+                  </div>
+
+                  <p className="mt-3 text-xs text-zinc-500">
+                    Afati: <strong>{formatDate(order.deadline)}</strong>
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+
+          {!loading && filteredOrders.length === 0 && (
+            <div className="px-5 py-14 text-center">
+              <p className="text-sm text-zinc-400">
+                Nuk u gjet asnjë porosi për filtrat e zgjedhur.
+              </p>
             </div>
-          );
-        })}
+          )}
 
-        {orders.length === 0 && (
-          <p className="text-center text-zinc-400 py-8 text-sm">
-            Nuk ka porosi.
-          </p>
-        )}
-      </div>
+          {loading && (
+            <div className="px-5 py-14 text-center text-sm text-zinc-400">
+              Duke ngarkuar porositë...
+            </div>
+          )}
+        </section>
+      )}
 
+      {/* ORDER MODAL */}
       {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60"
+          className="fixed inset-0 z-[120] flex items-end justify-center bg-zinc-950/65 p-0 backdrop-blur-sm sm:items-center sm:p-4"
           onClick={() => setSelected(null)}
         >
           <div
-            className="bg-white w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+            className="max-h-[94vh] w-full overflow-y-auto rounded-t-[28px] bg-white shadow-2xl sm:max-w-4xl sm:rounded-[28px]"
+            onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100">
-              <h2 className="font-serif text-lg font-bold text-zinc-900">
-                Detajet e porosisë
-              </h2>
-
-              <button
-                onClick={() => setSelected(null)}
-                className="w-8 h-8 rounded-xl bg-zinc-100 flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 space-y-2.5 text-sm">
-              {[
-                ["Emër", selected.full_name],
-                ["Email", selected.email],
-                ["Telefon", selected.phone],
-                ["Universiteti", selected.university || "—"],
-                ["Dega", selected.field_of_study || "—"],
-                ["Tema", selected.topic || "—"],
-                ["Niveli", selected.study_level],
-                ["Lloji", selected.work_type],
-                ["Fusha", selected.subject_area],
-                [
-                  "Afati",
-                  selected.deadline
-                    ? new Date(selected.deadline).toLocaleDateString("sq-AL")
-                    : "—",
-                ],
-                ["Buxheti", selected.budget_note || "—"],
-                ["Ka material", selected.has_existing_material ? "Po" : "Jo"],
-              ].map(([l, v]) => (
-                <div
-                  key={l}
-                  className="flex justify-between gap-3 border-b border-zinc-50 pb-2"
-                >
-                  <span className="text-zinc-500 flex-shrink-0">{l}:</span>
-                  <span className="text-zinc-900 font-medium text-right">
-                    {v}
-                  </span>
-                </div>
-              ))}
-
+            <header className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/95 px-5 py-4 backdrop-blur sm:px-7">
               <div>
-                <p className="font-medium text-zinc-900 mt-1 mb-1">
-                  Përshkrim:
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">
+                  Porosia
                 </p>
-                <p className="text-zinc-600 leading-relaxed text-xs">
-                  {selected.description}
-                </p>
+
+                <h2 className="mt-1 font-serif text-xl font-bold text-zinc-950 sm:text-2xl">
+                  Detajet e porosisë
+                </h2>
               </div>
 
-              {selected.uploaded_files?.length > 0 && (
-                <div>
-                  <p className="font-medium text-zinc-900 mt-2 mb-1">
-                    Skedarë nga studenti:
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-700 transition hover:bg-zinc-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </header>
+
+            <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1.05fr_0.95fr]">
+              <section className="space-y-5">
+                <div className="rounded-[20px] border border-zinc-100 bg-zinc-50/70 p-5">
+                  <h3 className="font-serif text-lg font-bold text-zinc-950">
+                    Studenti dhe porosia
+                  </h3>
+
+                  <div className="mt-4 space-y-3 text-sm">
+                    {[
+                      ["Emër", selected.full_name],
+                      ["Email", selected.email],
+                      ["Telefon", selected.phone],
+                      ["Universiteti", selected.university || "—"],
+                      ["Dega", selected.field_of_study || "—"],
+                      ["Tema", selected.topic || "—"],
+                      ["Niveli", selected.study_level || "—"],
+                      ["Lloji", selected.work_type || "—"],
+                      ["Fusha", selected.subject_area || "—"],
+                      ["Afati", formatDate(selected.deadline)],
+                      ["Buxheti", selected.budget_note || "—"],
+                      [
+                        "Ka material",
+                        selected.has_existing_material ? "Po" : "Jo",
+                      ],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="grid grid-cols-[110px_1fr] gap-3 border-b border-zinc-200/70 pb-3 last:border-b-0 last:pb-0"
+                      >
+                        <span className="text-zinc-500">{label}</span>
+                        <span className="break-words text-right font-medium text-zinc-900">
+                          {value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-[20px] border border-zinc-100 bg-white p-5 shadow-sm">
+                  <h3 className="font-serif text-lg font-bold text-zinc-950">
+                    Përshkrimi
+                  </h3>
+
+                  <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-7 text-zinc-600">
+                    {selected.description || "Pa përshkrim."}
+                  </p>
+                </div>
+
+                {selected.uploaded_files?.length > 0 && (
+                  <div className="rounded-[20px] border border-zinc-100 bg-white p-5 shadow-sm">
+                    <h3 className="font-serif text-lg font-bold text-zinc-950">
+                      Skedarë nga studenti
+                    </h3>
+
+                    <div className="mt-3 space-y-2">
+                      {selected.uploaded_files.map((fileUrl, index) => (
+                        <a
+                          key={`${fileUrl}-${index}`}
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 px-4 py-3 text-xs font-semibold text-violet-700 transition hover:border-violet-200 hover:bg-violet-50"
+                        >
+                          <Download className="h-4 w-4" />
+                          Skedar {index + 1}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </section>
+
+              <aside className="space-y-5">
+                <div className="rounded-[20px] border border-violet-100 bg-violet-50/50 p-5">
+                  <h3 className="font-serif text-lg font-bold text-zinc-950">
+                    Menaxhimi i statusit
+                  </h3>
+
+                  <label className="mt-4 block text-xs font-bold text-zinc-700">
+                    Statusi i porosisë
+                  </label>
+
+                  <select
+                    value={selected.order_status || "received"}
+                    onChange={(event) =>
+                      updateSelected("order_status", event.target.value)
+                    }
+                    className="mt-2 w-full rounded-xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+                  >
+                    {statuses.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <label className="mt-4 block text-xs font-bold text-zinc-700">
+                    Shënim për studentin
+                  </label>
+
+                  <textarea
+                    value={selected.admin_note || ""}
+                    onChange={(event) =>
+                      updateSelected("admin_note", event.target.value)
+                    }
+                    rows={5}
+                    placeholder="p.sh. Punimi është marrë dhe ka nisur përgatitja."
+                    className="mt-2 w-full resize-none rounded-xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={saveSelected}
+                    disabled={saving}
+                    className="mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-200/60 transition hover:-translate-y-0.5 disabled:opacity-60"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Duke ruajtur..." : "Ruaj ndryshimet"}
+                  </button>
+                </div>
+
+                <div className="rounded-[20px] border border-zinc-100 bg-white p-5 shadow-sm">
+                  <h3 className="font-serif text-lg font-bold text-zinc-950">
+                    Materiali final
+                  </h3>
+
+                  <p className="mt-2 text-xs leading-5 text-zinc-500">
+                    Ngarko dokumentin që studenti do të shkarkojë nga Dashboard-i.
                   </p>
 
-                  {selected.uploaded_files.map((f, i) => (
+                  <label className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-[16px] border-2 border-dashed border-violet-200 bg-violet-50/50 px-5 py-7 text-center transition hover:border-violet-400 hover:bg-violet-50">
+                    <Upload className="h-6 w-6 text-violet-600" />
+
+                    <span className="mt-2 text-sm font-bold text-zinc-800">
+                      Zgjidh file final
+                    </span>
+
+                    <span className="mt-1 text-[10px] text-zinc-400">
+                      DOC, PDF, PPT, Excel ose ZIP
+                    </span>
+
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx,.zip"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) uploadFinalFile(file);
+                      }}
+                    />
+                  </label>
+
+                  {selected.final_file_url && (
                     <a
-                      key={i}
-                      href={f}
+                      href={selected.final_file_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-amber-600 text-xs hover:underline mb-1"
+                      className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-700"
                     >
-                      <Download className="w-3.5 h-3.5" /> Skedar {i + 1}
+                      <Download className="h-4 w-4" />
+                      {selected.final_file_name || "Shiko materialin final"}
                     </a>
-                  ))}
+                  )}
                 </div>
-              )}
-
-              <div className="pt-4 border-t border-zinc-100">
-                <p className="text-xs font-medium text-zinc-900 mb-2">
-                  Ndrysho statusin:
-                </p>
-
-                <select
-                  value={selected.order_status || "received"}
-                  onChange={(e) => updateSelected("order_status", e.target.value)}
-                  className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
-                >
-                  {statuses.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <p className="text-xs font-medium text-zinc-900 mb-2">
-                  Shënim për studentin:
-                </p>
-
-                <textarea
-                  value={selected.admin_note || ""}
-                  onChange={(e) => updateSelected("admin_note", e.target.value)}
-                  rows={3}
-                  placeholder="p.sh. Punimi është marrë dhe ka nisur përgatitja."
-                  className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none"
-                />
-              </div>
-
-              <div>
-                <p className="text-xs font-medium text-zinc-900 mb-2">
-                  Upload punimin final:
-                </p>
-
-                <label className="w-full border border-dashed border-zinc-300 rounded-xl px-4 py-4 text-sm bg-zinc-50 hover:border-amber-400 cursor-pointer flex items-center justify-center gap-2">
-                  <Upload className="w-4 h-4" />
-                  Zgjidh file final
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx,.zip"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) uploadFinalFile(file);
-                    }}
-                  />
-                </label>
-              </div>
-
-              {selected.final_file_url && (
-                <a
-                  href={selected.final_file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-green-700 text-sm font-semibold hover:underline"
-                >
-                  <Download className="w-4 h-4" />
-                  Shiko file final: {selected.final_file_name || "Materiali final"}
-                </a>
-              )}
+              </aside>
             </div>
 
-            <div className="px-5 pb-5 border-t border-zinc-100 pt-4 flex flex-col sm:flex-row gap-2">
-              <button
-                type="button"
-                onClick={saveSelected}
-                disabled={saving}
-                className="btn-primary flex-1 justify-center"
-              >
-                <Save className="w-4 h-4" />
-                {saving ? "Duke ruajtur..." : "Ruaj statusin"}
-              </button>
-
+            <footer className="flex flex-col gap-2 border-t border-zinc-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-7">
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="btn-outline flex-1 justify-center"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-zinc-200 bg-white px-6 py-2.5 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
               >
                 Mbyll
               </button>
-            </div>
+            </footer>
           </div>
         </div>
       )}

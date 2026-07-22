@@ -1,136 +1,304 @@
-import { Link } from 'react-router-dom'
-import { ArrowRight, MessageCircle, FileText, Download, Eye, BookOpen, LayoutTemplate } from 'lucide-react'
-import { SITE_CONFIG } from '../lib/supabase'
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Award,
+  BookOpen,
+  CheckCircle2,
+  Download,
+  Eye,
+  GraduationCap,
+  MessageCircle,
+  MonitorPlay,
+  ShieldCheck,
+} from "lucide-react";
+import { SITE_CONFIG } from "../lib/supabase";
 
+type TemplateItem = {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  details: string;
+  fileUrl: string;
+  icon: React.ElementType;
+  theme: "violet" | "amber" | "green";
+};
 
-const templates = [
+const templates: TemplateItem[] = [
   {
-    name: 'Template Bachelor',
-    desc: 'Struktura standarde e diplomës Bachelor: faqe titullore, abstrakti, lista e figurave, kapitulli, referenca APA.',
-    pages: '75-100',
-    icon: FileText,
-    color: 'bg-blue-50 border-blue-200',
-    iconColor: 'text-blue-600',
-    badge: 'Bachelor',
-    badgeColor: 'bg-blue-100 text-blue-700',
-  },
-  {
-    name: 'Template Master',
-    desc: 'Struktura e plotë e tezës Master me analizë shkencore, metodologji, konkluzione dhe shtojca.',
-    pages: '100-150',
+    id: "bachelor",
+    title: "Template Bachelor",
+    category: "Bachelor",
+    description:
+      "Strukturë standarde për punim Bachelor: faqe titullore, abstrakt, lista e figurave, kapituj, referenca APA dhe shtojca.",
+    details: "30–50 faqe",
+    fileUrl: "/files/template-bachelor.pdf",
     icon: BookOpen,
-    color: 'bg-amber-50 border-amber-200',
-    iconColor: 'text-amber-600',
-    badge: 'Master',
-    badgeColor: 'bg-amber-100 text-amber-700',
+    theme: "violet",
   },
   {
-    name: 'Template PowerPoint Mbrojtje',
-    desc: '12-15 slide profesionale për prezantimin e diplomës: hyrje, gjetjet kryesore, konkluzione.',
-    pages: '12-15 slide',
-    icon: LayoutTemplate,
-    color: 'bg-green-50 border-green-200',
-    iconColor: 'text-green-600',
-    badge: 'Prezantim',
-    badgeColor: 'bg-green-100 text-green-700',
+    id: "master",
+    title: "Template Master",
+    category: "Master",
+    description:
+      "Strukturë e plotë për tezë Master me literaturë, metodologji, analizë, rezultate, diskutim, përfundime dhe shtojca.",
+    details: "50–65 faqe",
+    fileUrl: "/files/template-master.pdf",
+    icon: GraduationCap,
+    theme: "amber",
   },
-]
+  {
+    id: "powerpoint",
+    title: "Template PowerPoint Mbrojtje",
+    category: "Prezantim",
+    description:
+      "Template profesional për prezantimin e diplomës: hyrje, qëllimet, metodologjia, rezultatet, përfundimet dhe rekomandimet.",
+    details: "12–15 slide",
+    fileUrl: "/files/template-powerpoint.pptx",
+    icon: MonitorPlay,
+    theme: "green",
+  },
+];
 
-const levelColors: Record<string, string> = {
-  Bachelor: 'bg-blue-100 text-blue-700',
-  Master: 'bg-amber-100 text-amber-700',
-}
+const qualityPoints = [
+  {
+    title: "Origjinale 100%",
+    description:
+      "Çdo strukturë përgatitet nga e para, me burime dhe referenca të përshtatura.",
+    icon: Award,
+  },
+  {
+    title: "Standard Akademik",
+    description:
+      "Ndiqet stili APA ose formati specifik që kërkon universiteti juaj.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Kontroll i Cilësisë",
+    description:
+      "Para dorëzimit, materiali kontrollohet për strukturën, formatimin dhe qartësinë.",
+    icon: ShieldCheck,
+  },
+];
+
+const themeClasses = {
+  violet: {
+    card: "border-violet-100 bg-gradient-to-br from-violet-50/80 to-white",
+    icon: "bg-violet-100 text-violet-700",
+    badge: "border-violet-200 bg-violet-50 text-violet-700",
+    button:
+      "border-violet-300 text-violet-700 hover:bg-violet-700 hover:text-white",
+  },
+  amber: {
+    card: "border-amber-100 bg-gradient-to-br from-amber-50/80 to-white",
+    icon: "bg-amber-100 text-amber-600",
+    badge: "border-amber-200 bg-amber-50 text-amber-700",
+    button:
+      "border-amber-300 text-amber-700 hover:bg-amber-500 hover:text-zinc-950",
+  },
+  green: {
+    card: "border-emerald-100 bg-gradient-to-br from-emerald-50/80 to-white",
+    icon: "bg-emerald-100 text-emerald-700",
+    badge: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    button:
+      "border-emerald-300 text-emerald-700 hover:bg-emerald-600 hover:text-white",
+  },
+};
 
 export default function Portfolio() {
+  const whatsappMessage =
+    "Përshëndetje! Dëshiroj një template të personalizuar sipas kërkesave të universitetit tim.";
+
   return (
-    <div className="pt-24 pb-20">
-
-      {/* Templates */}
-      <section className="container-academic mb-14">
-        <div className="text-center mb-8">
-          <span className="section-label">Shembuj Strukturash</span>
-          <h2 className="section-title mt-2 mb-3">Template Universitare</h2>
-          <p className="section-subtitle mx-auto">
-            Çdo punë ndiqet sipas strukturës standarde të universitetit përkatës dhe udhëzimeve të pedagogut.
+    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
+      {/* INTRO */}
+      <section className="px-4 sm:px-5 lg:px-10">
+        <div className="mx-auto max-w-[1440px] text-center">
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-violet-600">
+            Shembuj strukturash
           </p>
-        </div>
 
-        <div className="grid sm:grid-cols-3 gap-5">
-          {templates.map((t) => (
-            <div key={t.name} className={`border-2 rounded-2xl p-6 ${t.color}`}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                  <t.icon className={`w-5 h-5 ${t.iconColor}`} />
-                </div>
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${t.badgeColor}`}>{t.badge}</span>
-              </div>
-              <h3 className="font-serif font-bold text-zinc-900 text-base mb-2">{t.name}</h3>
-              <p className="text-zinc-600 text-xs leading-relaxed mb-3">{t.desc}</p>
-              <div className="flex items-center gap-2 text-xs text-zinc-500">
-                <Eye className="w-3.5 h-3.5" />
-                <span>{t.pages} faqe</span>
-              </div>
-            </div>
-          ))}
-        </div>
+          <h1 className="mt-3 font-serif text-3xl font-bold text-zinc-950 sm:text-4xl lg:text-5xl">
+            Template Universitare
+          </h1>
 
-        <div className="mt-6 bg-zinc-950 rounded-2xl p-6 text-center">
-          <p className="text-zinc-400 text-sm mb-4">
-            Keni nevojë për template specifike të universitetit tuaj? Na dërgoni udhëzimet dhe i personalizojmë.
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-zinc-500 sm:text-base">
+            Struktura profesionale, të hartuara sipas standardeve akademike
+            dhe udhëzimeve më të përdorura.
           </p>
-          <a
-            href={`https://wa.me/${SITE_CONFIG.whatsapp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors"
-          >
-            <Download className="w-4 h-4" /> Kërko template falas
-          </a>
         </div>
       </section>
 
-      {/* Process quality */}
-      <section className="container-academic mb-14">
-        <div className="grid sm:grid-cols-3 gap-4">
-          {[
-            { n: '01', title: 'Origjinale 100%', text: 'Çdo punë shkruhet nga e para, me burime dhe referenca origjinale.' },
-            { n: '02', title: 'Standard Akademik', text: 'Ndiqet stili APA ose çdo stil tjetër që kërkon universiteti juaj.' },
-            { n: '03', title: 'Kontroll i Kualitetit', text: 'Para dorëzimit, punimi kalon kontroll të brendshëm të cilësisë.' },
-          ].map((s) => (
-            <div key={s.n} className="bg-white border border-zinc-100 rounded-2xl p-6 shadow-sm">
-              <div className="font-serif text-3xl font-bold text-amber-400 mb-3">{s.n}</div>
-              <h3 className="font-serif font-bold text-zinc-900 mb-2">{s.title}</h3>
-              <p className="text-zinc-500 text-sm leading-relaxed">{s.text}</p>
-            </div>
-          ))}
+      {/* TEMPLATE CARDS */}
+      <section className="px-4 py-8 sm:px-5 sm:py-10 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid gap-4 md:grid-cols-3 lg:gap-5">
+            {templates.map((template) => {
+              const Icon = template.icon;
+              const theme = themeClasses[template.theme];
+
+              return (
+              <article
+  key={template.id}
+  className={`flex h-full min-w-0 flex-col rounded-[22px] border p-5 shadow-[0_12px_34px_rgba(24,24,27,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(76,29,149,0.08)] sm:p-6 ${theme.card}`}
+>
+  <div className="flex items-start justify-between gap-3">
+    <div
+      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${theme.icon}`}
+    >
+      <Icon className="h-5 w-5" />
+    </div>
+
+    <span
+      className={`rounded-full border px-3 py-1 text-[10px] font-bold ${theme.badge}`}
+    >
+      {template.category}
+    </span>
+  </div>
+
+  <h2 className="mt-5 font-serif text-xl font-bold text-zinc-950">
+    {template.title}
+  </h2>
+
+  <p className="mt-2 text-sm leading-6 text-zinc-600">
+    {template.description}
+  </p>
+
+  <div className="mt-auto pt-5">
+    <div className="flex items-center gap-2 border-t border-zinc-200/70 pt-4 text-xs text-zinc-500">
+      <Eye className="h-4 w-4" />
+      {template.details}
+    </div>
+
+    <a
+      href={template.fileUrl}
+      download
+      className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition ${theme.button}`}
+    >
+      <Download className="h-4 w-4" />
+      Shkarko template
+    </a>
+  </div>
+</article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* QUALITY — DISTINCT LIGHT SECTION */}
+      <section className="border-y border-violet-100 bg-gradient-to-b from-violet-50/45 to-white px-4 py-10 sm:px-5 sm:py-12 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600">
+              Pse Ne?
+            </p>
+
+            <h2 className="mt-2 font-serif text-3xl font-bold text-zinc-950 sm:text-4xl">
+              Punime Premium, të përgatitura nga ekspertë akademikë
+            </h2>
+          </div>
+
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {qualityPoints.map((point) => {
+              const Icon = point.icon;
+
+              return (
+                <article
+                  key={point.title}
+                  className="flex items-start gap-4 rounded-[20px] border border-white bg-white/80 p-5 shadow-[0_10px_30px_rgba(76,29,149,0.05)] backdrop-blur"
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-700">
+                    <Icon className="h-6 w-6" />
+                  </div>
+
+                  <div>
+                    <h3 className="font-serif text-lg font-bold text-zinc-950">
+                      {point.title}
+                    </h3>
+
+                    <p className="mt-2 text-sm leading-6 text-zinc-500">
+                      {point.description}
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="container-academic">
-        <div className="bg-zinc-950 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-1/4 w-72 h-72 bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10">
-            <h2 className="font-serif text-3xl font-bold text-white mb-3">Gati të fillojmë punimin tuaj?</h2>
-            <p className="text-zinc-400 mb-7 max-w-md mx-auto text-sm leading-relaxed">
-              Konsultimi është falas. Na tregoni temën dhe ju japim vlerësim të menjëhershëm.
+    <section className="px-4 py-8 sm:px-5 lg:px-10">
+  <div className="mx-auto max-w-[1440px]">
+    <div className="relative overflow-hidden rounded-[28px] border border-violet-100 bg-gradient-to-br from-white via-violet-50/60 to-purple-100/40 px-5 py-7 shadow-[0_20px_60px_rgba(76,29,149,0.10)] sm:px-8 sm:py-9 lg:px-10">
+      <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-violet-300/20 blur-3xl" />
+      <div className="absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-purple-400/20 blur-3xl" />
+
+      <div className="relative grid items-center gap-7 lg:grid-cols-[1fr_auto]">
+        <div className="flex items-start gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 to-purple-500 text-white shadow-lg shadow-violet-200">
+            <MessageCircle className="h-6 w-6" />
+          </div>
+
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600">
+              Hapi i radhës
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link to="/zgjidh-punimin" className="btn-primary justify-center">
-                Porosit tani <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a
-                href={`https://wa.me/${SITE_CONFIG.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-whatsapp justify-center"
-              >
-                <MessageCircle className="w-4 h-4" /> Konsultim falas
-              </a>
+
+            <h2 className="mt-2 font-serif text-2xl font-bold leading-tight text-zinc-950 sm:text-3xl">
+              Gati të fillojmë punimin tuaj?
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600">
+              Konsultimi është falas. Na tregoni temën, afatin dhe kërkesat
+              tuaja, dhe ju japim orientimin për hapat e parë.
+            </p>
+
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-500">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-violet-600" />
+                Përgjigje e shpejtë
+              </span>
+
+              <span className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-violet-600" />
+                Konfidencialitet
+              </span>
+
+              <span className="flex items-center gap-2">
+                <MessageCircle className="h-4 w-4 text-violet-600" />
+                Komunikim në WhatsApp
+              </span>
             </div>
           </div>
         </div>
-      </section>
+
+        <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+          <Link
+            to="/zgjidh-punimin"
+            className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5"
+          >
+            Porosit tani
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+
+          <a
+            href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
+              whatsappMessage
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white px-7 py-3.5 text-sm font-bold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-50"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Konsultim falas
+          </a>
+        </div>
+      </div>
     </div>
-  )
+  </div>
+</section>
+    </main>
+  );
 }

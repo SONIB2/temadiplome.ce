@@ -1,179 +1,473 @@
-import { Link } from 'react-router-dom'
-import { GraduationCap, BookOpen, Users, Shield, Award, ArrowRight, MapPin, Globe2, Building2 } from 'lucide-react'
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Award,
+  BookOpen,
+  Building2,
+  CalendarDays,
+  GraduationCap,
+  Languages,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
+import { SITE_CONFIG } from "../lib/supabase";
+
+const stats = [
+  {
+    value: "+400",
+    label: "Studentë të ndihmuar",
+    icon: GraduationCap,
+  },
+  {
+    value: "30+",
+    label: "Universitete",
+    icon: Building2,
+  },
+  {
+    value: "4",
+    label: "Shtete",
+    icon: MapPin,
+  },
+  {
+    value: "2022",
+    label: "Aktiv",
+    icon: CalendarDays,
+  },
+];
+
+const countries = [
+  { code: "AL", name: "Shqipëri" },
+  { code: "XK", name: "Kosovë" },
+  { code: "MK", name: "Maqedoni e Veriut" },
+  { code: "ME", name: "Mali i Zi" },
+];
+
+const languages = [
+  {
+    code: "SQ",
+    name: "Shqip",
+    description: "Gjuha kryesore",
+  },
+  {
+    code: "EN",
+    name: "Anglisht",
+    description: "Academic writing",
+  },
+  {
+    code: "IT",
+    name: "Italisht",
+    description: "Scrittura accademica italiana",
+  },
+];
 
 const values = [
-  { icon: BookOpen, title: 'Orientim akademik', text: 'Ndihmojmë studentët të kuptojnë dhe realizojnë punime akademike me cilësi.' },
-  { icon: Users, title: 'Mbështetje praktike', text: 'Konsultime dhe mbështetje për çdo fazë të punimit, nga ideja tek dorëzimi.' },
-  { icon: Shield, title: 'Konfidencialitet total', text: 'Informacioni juaj është 100% konfidencial dhe nuk ndahet me palë të treta.' },
-  { icon: Award, title: 'Standard i lartë', text: 'Çdo shërbim sipas standardeve universitare dhe stilit akademik të kërkuar.' },
-]
-
-const countries = ['Shqipëri', 'Kosovë', 'Maqedoni e Veriut', 'Mal i Zi']
-const languages = ['Shqip', 'Anglisht', 'Italisht']
+  {
+    title: "Orientim akademik",
+    description:
+      "Ndihmojmë studentët të kuptojnë dhe realizojnë punimet akademike me qartësi.",
+    icon: BookOpen,
+  },
+  {
+    title: "Mbështetje praktike",
+    description:
+      "Konsultime dhe mbështetje për çdo fazë të punimit, nga ideja te dorëzimi.",
+    icon: Users,
+  },
+  {
+    title: "Konfidencialitet total",
+    description:
+      "Informacioni juaj trajtohet në mënyrë konfidenciale dhe nuk ndahet me palë të treta.",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Standarde të larta",
+    description:
+      "Çdo shërbim përshtatet me kërkesat dhe udhëzimet akademike të universitetit.",
+    icon: Award,
+  },
+];
 
 export default function About() {
+  const whatsappMessage =
+    "Përshëndetje! Dëshiroj më shumë informacion për temadiplome.ce dhe shërbimet tuaja.";
+
   return (
-    <div className="pt-24 pb-20">
-      <section className="container-academic text-center mb-14">
-        <span className="section-label">Rreth Nesh</span>
-        <h1 className="section-title mt-2">Kush jemi ne</h1>
+    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
+      {/* HERO */}
+      <section className="px-4 sm:px-5 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid items-center gap-7 lg:grid-cols-2 lg:gap-12">
+            {/* IMAGE */}
+            <div className="relative min-w-0">
+              <div className="relative overflow-hidden rounded-[24px] shadow-[0_24px_70px_rgba(24,24,27,0.12)]">
+                <img
+                  src="https://images.pexels.com/photos/590493/pexels-photo-590493.jpeg?auto=compress&cs=tinysrgb&w=1400"
+                  alt="Ambient akademik me libra dhe laptop"
+                  className="h-[280px] w-full object-cover sm:h-[420px] lg:h-[520px]"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+
+                <div className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-violet-700 to-purple-600 px-3 py-1.5 text-[10px] font-bold text-white shadow-lg sm:right-5 sm:top-5 sm:text-xs">
+                  Aktiv nga 2022
+                </div>
+
+                <div className="absolute bottom-4 left-4 rounded-[18px] border border-white/70 bg-white/95 px-4 py-3 shadow-xl backdrop-blur sm:bottom-6 sm:left-6 sm:px-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                      <Users className="h-5 w-5" />
+                    </div>
+
+                    <div>
+                      <p className="font-serif text-lg font-bold text-zinc-950">
+                        +400
+                      </p>
+                      <p className="text-[10px] text-zinc-500 sm:text-xs">
+                        studentë të ndihmuar
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* TEXT */}
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-violet-600">
+                Rreth nesh
+              </p>
+
+              <h1 className="mt-3 font-serif text-3xl font-bold leading-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+                Kush jemi ne
+              </h1>
+
+              <div className="mt-4 h-0.5 w-10 rounded-full bg-violet-600" />
+
+              <div className="mt-6 space-y-4 text-sm leading-7 text-zinc-600 sm:text-base">
+                <p>
+                  <strong className="text-zinc-950">temadiplome.ce</strong> është
+                  një platformë akademike profesionale, aktive që nga viti
+                  2022, e krijuar për të ndihmuar studentët të realizojnë
+                  punimet e tyre akademike me qartësi, cilësi dhe standard.
+                </p>
+
+                <p>
+                  Ofrojmë mbështetje nga strukturimi fillestar dhe orientimi për
+                  temën, deri te analiza SPSS, referencat APA, prezantimet dhe
+                  formatimi përfundimtar.
+                </p>
+
+                <p>
+                  Punojmë me studentë nga Shqipëria, Kosova, Maqedonia e Veriut
+                  dhe Mali i Zi, në gjuhën shqipe, angleze dhe italiane.
+                </p>
+              </div>
+
+              <div className="mt-6 rounded-[18px] border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white p-4 shadow-[0_10px_30px_rgba(76,29,149,0.05)] sm:p-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                    <ShieldCheck className="h-4 w-4" />
+                  </div>
+
+                  <p className="text-xs leading-5 text-zinc-600 sm:text-sm sm:leading-6">
+                    <strong className="text-zinc-950">E rëndësishme:</strong>{" "}
+                    Platforma ofron asistencë dhe orientim akademik. Ne nuk
+                    zëvendësojmë përgjegjësinë akademike të studentit dhe
+                    respektojmë integritetin akademik.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
+                  whatsappMessage
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200/70 transition hover:-translate-y-0.5 sm:w-auto"
+              >
+                Na kontaktoni
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="container-academic">
+      {/* STATS */}
+      <section className="px-4 py-8 sm:px-5 sm:py-10 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+            {stats.map((stat) => {
+              const Icon = stat.icon;
 
-        {/* Main intro */}
-        <div className="grid lg:grid-cols-2 gap-10 items-center mb-12">
-          <div className="relative rounded-2xl overflow-hidden shadow-xl h-80 sm:h-[420px]">
-            <img
-              src="https://images.pexels.com/photos/5905857/pexels-photo-5905857.jpeg?auto=compress&cs=tinysrgb&w=800"
-              alt="Student studion"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 to-transparent" />
-            <div className="absolute bottom-6 left-6 bg-amber-400 rounded-2xl p-4 shadow-lg">
-              <p className="font-serif text-2xl font-bold text-zinc-900">+400</p>
-              <p className="text-xs text-zinc-800 font-medium">studentë të ndihmuar</p>
-            </div>
-            <div className="absolute top-4 right-4 bg-zinc-900/80 text-amber-400 text-xs font-bold px-3 py-1.5 rounded-xl">
-              Aktiv nga 2022
-            </div>
-          </div>
-          <div>
-            <p className="text-lg text-zinc-700 leading-relaxed mb-5">
-              <strong className="text-zinc-900">temadiplome.ce</strong> është një platformë akademike profesionale, aktive që nga viti <strong>2022</strong>, e krijuar për të ndihmuar studentët të realizojnë punimet e tyre të diplomës me cilësi, saktësi dhe standard.
-            </p>
-            <p className="text-zinc-600 leading-relaxed mb-5">
-              Ofrojmë shërbime të plota: nga projekt propozimi, deri tek diploma e përfunduar. Punojmë me studentë nga Shqipëria, Kosova, Maqedonia dhe Mali i Zi, në gjuhët shqipe, angleze dhe italiane.
-            </p>
-            <p className="text-zinc-600 leading-relaxed mb-7 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
-              <strong className="text-amber-800">E rëndësishme:</strong> Platforma ofron ndihmë akademike profesionale. Ne nuk zëvendësojmë përgjegjësinë akademike të studentit. Qëllimi ynë është të ndihmojmë çdo student të realizojë punimin e tij me cilësi dhe standard.
-            </p>
-            <Link to="/kontakt" className="btn-primary">
-              Na kontaktoni <ArrowRight className="w-4 h-4" />
-            </Link>
+              return (
+                <article
+                  key={stat.label}
+                  className="flex min-w-0 items-center justify-center gap-3 rounded-[18px] border border-violet-100 bg-gradient-to-br from-violet-50/70 to-white px-3 py-4 text-center shadow-[0_10px_30px_rgba(76,29,149,0.05)] sm:px-5"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                    <Icon className="h-5 w-5" />
+                  </div>
+
+                  <div className="min-w-0 text-left">
+                    <p className="font-serif text-lg font-bold leading-none text-zinc-950">
+                      {stat.value}
+                    </p>
+
+                    <p className="mt-1 text-[10px] leading-4 text-zinc-500 sm:text-xs">
+                      {stat.label}
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
+      </section>
 
-        {/* Stats strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-12">
-          {[
-            { val: '+400', label: 'Studentë të kënaqur' },
-            { val: '60+', label: 'Universitete' },
-            { val: '4', label: 'Shtete' },
-            { val: '2022', label: 'Aktiv nga' },
-          ].map((s) => (
-            <div key={s.val} className="bg-zinc-950 rounded-2xl p-5 text-center">
-              <p className="font-serif text-2xl font-bold text-amber-400">{s.val}</p>
-              <p className="text-zinc-400 text-xs mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
+      {/* MISSION */}
+      <section className="px-4 pb-8 sm:px-5 sm:pb-10 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="relative grid overflow-hidden rounded-[24px] bg-[#0b0718] text-white shadow-[0_24px_70px_rgba(7,9,21,0.18)] lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="relative flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-10">
+              <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-violet-600/25 blur-3xl" />
 
-        {/* Mission */}
-        <div className="bg-zinc-950 rounded-3xl p-8 sm:p-12 mb-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/5 rounded-full blur-3xl" />
-          <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <GraduationCap className="w-10 h-10 text-amber-400 mb-4" />
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-4">Misioni ynë</h2>
-              <p className="text-zinc-400 leading-relaxed text-sm sm:text-base">
-                Çdo student meriton mbështetje cilësore. Që nga viti 2022, jemi platforma që i jep studentit drejtimin, njohuritë dhe mbështetjen për të kryer punimin e diplomës me sukses.
-              </p>
+              <div className="relative">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 to-purple-500 text-white">
+                  <GraduationCap className="h-6 w-6" />
+                </div>
+
+                <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.22em] text-violet-300">
+                  Qëllimi ynë
+                </p>
+
+                <h2 className="mt-2 font-serif text-2xl font-bold sm:text-3xl">
+                  Misioni ynë
+                </h2>
+
+                <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-300 sm:text-base">
+                  Çdo student meriton mbështetje cilësore. Që nga viti 2022,
+                  kemi ndërtuar një platformë që ofron orientim, qartësi dhe
+                  mbështetje praktike për realizimin e punimeve akademike.
+                </p>
+              </div>
             </div>
-            <img
-              src="https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=800"
-              alt="Libra"
-              className="rounded-2xl h-56 object-cover w-full"
-            />
+
+            <div className="relative min-h-[230px] overflow-hidden sm:min-h-[320px]">
+              <img
+                src="https://images.pexels.com/photos/1290141/pexels-photo-1290141.jpeg?auto=compress&cs=tinysrgb&w=1400"
+                alt="Bibliotekë moderne"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0b0718] via-[#0b0718]/20 to-transparent lg:block" />
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Coverage: countries + languages */}
-        <div className="grid sm:grid-cols-2 gap-5 mb-12">
-          <div className="bg-white border border-zinc-100 rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <MapPin className="w-5 h-5 text-amber-500" />
-              <h3 className="font-serif font-bold text-zinc-900">Shtetet ku punojmë</h3>
+      {/* COUNTRIES + LANGUAGES */}
+      <section className="px-4 pb-8 sm:px-5 sm:pb-10 lg:px-10">
+        <div className="mx-auto grid max-w-[1440px] gap-5 lg:grid-cols-2">
+          {/* COUNTRIES */}
+          <article className="rounded-[22px] border border-zinc-100 bg-white p-5 shadow-[0_12px_36px_rgba(24,24,27,0.05)] sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                <MapPin className="h-5 w-5" />
+              </div>
+
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">
+                  Mbulimi
+                </p>
+
+                <h2 className="font-serif text-xl font-bold text-zinc-950">
+                  Shtetet ku punojmë
+                </h2>
+              </div>
             </div>
-            <div className="space-y-2">
-              {[
-                { flag: '🇦🇱', label: 'Shqipëri' },
-                { flag: '🇽🇰', label: 'Kosovë' },
-                { flag: '🇲🇰', label: 'Maqedoni e Veriut' },
-                { flag: '🇲🇪', label: 'Mal i Zi' },
-              ].map((c) => (
-                <div key={c.label} className="flex items-center gap-3 bg-zinc-50 rounded-xl px-3.5 py-2.5">
-                  <span className="text-lg">{c.flag}</span>
-                  <span className="text-sm font-medium text-zinc-800">{c.label}</span>
+
+            <div className="mt-5 space-y-2">
+              {countries.map((country) => (
+                <div
+                  key={country.code}
+                  className="flex items-center gap-3 rounded-xl bg-zinc-50 px-4 py-3"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-[10px] font-bold text-violet-700">
+                    {country.code}
+                  </span>
+
+                  <span className="text-sm font-medium text-zinc-800">
+                    {country.name}
+                  </span>
                 </div>
               ))}
             </div>
-            <Link to="/universitetet" className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-amber-600 hover:text-amber-700">
-              Shiko të gjitha universitetet <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
 
-          <div className="bg-white border border-zinc-100 rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <Globe2 className="w-5 h-5 text-amber-500" />
-              <h3 className="font-serif font-bold text-zinc-900">Gjuhët e punimit</h3>
+            <Link
+              to="/universitetet"
+              className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-violet-700 sm:text-sm"
+            >
+              Shiko të gjitha universitetet
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </article>
+
+          {/* LANGUAGES */}
+          <article className="rounded-[22px] border border-zinc-100 bg-white p-5 shadow-[0_12px_36px_rgba(24,24,27,0.05)] sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                <Languages className="h-5 w-5" />
+              </div>
+
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">
+                  Komunikimi
+                </p>
+
+                <h2 className="font-serif text-xl font-bold text-zinc-950">
+                  Gjuhët e punimit
+                </h2>
+              </div>
             </div>
-            <div className="space-y-2">
-              {[
-                { code: 'SQ', label: 'Shqip', desc: 'Gjuha kryesore' },
-                { code: 'EN', label: 'Anglisht', desc: 'English academic writing' },
-                { code: 'IT', label: 'Italisht', desc: 'Scrittura accademica italiana' },
-              ].map((l) => (
-                <div key={l.code} className="flex items-center gap-3 bg-zinc-50 rounded-xl px-3.5 py-2.5">
-                  <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
-                    {l.code}
+
+            <div className="mt-5 space-y-2">
+              {languages.map((language) => (
+                <div
+                  key={language.code}
+                  className="flex items-center gap-3 rounded-xl bg-zinc-50 px-4 py-3"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-[10px] font-bold text-violet-700">
+                    {language.code}
                   </span>
+
                   <div>
-                    <p className="text-sm font-medium text-zinc-800">{l.label}</p>
-                    <p className="text-xs text-zinc-400">{l.desc}</p>
+                    <p className="text-sm font-bold text-zinc-900">
+                      {language.name}
+                    </p>
+
+                    <p className="text-[10px] text-zinc-500 sm:text-xs">
+                      {language.description}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
+          </article>
+        </div>
+      </section>
+
+      {/* VALUES */}
+      <section className="border-y border-violet-100 bg-gradient-to-b from-violet-50/35 to-white px-4 py-8 sm:px-5 sm:py-10 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+            {values.map((value) => {
+              const Icon = value.icon;
+
+              return (
+                <article
+                  key={value.title}
+                  className="flex min-w-0 flex-col items-center rounded-[20px] border border-white bg-white/90 p-4 text-center shadow-[0_10px_30px_rgba(76,29,149,0.05)] sm:p-6"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+                    <Icon className="h-5 w-5" />
+                  </div>
+
+                  <h3 className="mt-4 font-serif text-sm font-bold text-zinc-950 sm:text-lg">
+                    {value.title}
+                  </h3>
+
+                  <p className="mt-2 text-[10px] leading-4 text-zinc-500 sm:text-xs sm:leading-5">
+                    {value.description}
+                  </p>
+                </article>
+              );
+            })}
           </div>
         </div>
+      </section>
 
-        {/* Values */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          {values.map((v) => (
-            <div key={v.title} className="bg-zinc-50 rounded-2xl p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center mx-auto mb-3">
-                <v.icon className="w-6 h-6 text-amber-600" />
+      {/* COMPANY INFO */}
+      <section className="px-4 py-8 sm:px-5 sm:py-10 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid gap-3 rounded-[22px] border border-zinc-100 bg-white p-4 shadow-[0_12px_36px_rgba(24,24,27,0.05)] sm:grid-cols-3 sm:p-5">
+            <div className="flex items-center gap-3 rounded-xl bg-zinc-50 px-4 py-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
+                <Building2 className="h-4 w-4" />
               </div>
-              <h3 className="font-serif text-base font-semibold text-zinc-900 mb-1.5">{v.title}</h3>
-              <p className="text-xs text-zinc-500 leading-relaxed">{v.text}</p>
-            </div>
-          ))}
-        </div>
 
-        {/* Legal / NIPT */}
-        <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="w-11 h-11 rounded-xl bg-zinc-200 flex items-center justify-center flex-shrink-0">
-              <Building2 className="w-5 h-5 text-zinc-600" />
+              <div>
+                <p className="text-[10px] text-zinc-500">Emri i subjektit</p>
+                <p className="text-sm font-bold text-zinc-950">
+                  temadiplome.ce
+                </p>
+              </div>
             </div>
-            <div className="flex-1 grid sm:grid-cols-3 gap-4">
-              <div>
-                <p className="text-xs text-zinc-500 mb-1">Emri i subjektit</p>
-                <p className="font-bold text-zinc-900">temadiplome.ce</p>
+
+            <div className="flex items-center gap-3 rounded-xl bg-zinc-50 px-4 py-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
+                <BookOpen className="h-4 w-4" />
               </div>
+
               <div>
-                <p className="text-xs text-zinc-500 mb-1">NIPT</p>
-                <p className="font-bold text-zinc-900 font-mono">M51607036D</p>
+                <p className="text-[10px] text-zinc-500">NIPT</p>
+                <p className="text-sm font-bold text-zinc-950">M51607036D</p>
               </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-xl bg-zinc-50 px-4 py-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
+                <CalendarDays className="h-4 w-4" />
+              </div>
+
               <div>
-                <p className="text-xs text-zinc-500 mb-1">Aktiv nga</p>
-                <p className="font-bold text-zinc-900">2022</p>
+                <p className="text-[10px] text-zinc-500">Aktiv nga</p>
+                <p className="text-sm font-bold text-zinc-950">2022</p>
               </div>
             </div>
           </div>
         </div>
       </section>
-    </div>
-  )
+
+      {/* FINAL CTA */}
+      <section className="px-4 pb-8 sm:px-5 sm:pb-10 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="relative overflow-hidden rounded-[24px] border border-violet-100 bg-gradient-to-r from-violet-50 via-white to-purple-50 px-5 py-7 shadow-[0_16px_44px_rgba(76,29,149,0.08)] sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-8 lg:px-10">
+            <div className="absolute -left-16 -top-20 h-56 w-56 rounded-full bg-violet-300/20 blur-3xl" />
+
+            <div className="relative">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600">
+                Kontakto me ne
+              </p>
+
+              <h2 className="mt-2 font-serif text-2xl font-bold text-zinc-950 sm:text-3xl">
+                Ke nevojë për orientim akademik?
+              </h2>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600">
+                Na shkruaj për temën, strukturën, analizën ose shërbimin që të
+                nevojitet.
+              </p>
+            </div>
+
+            <a
+              href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
+                whatsappMessage
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative mt-5 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200/70 transition hover:-translate-y-0.5 lg:mt-0 lg:w-auto"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Na kontaktoni
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }

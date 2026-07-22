@@ -1,6 +1,17 @@
-import { Link } from 'react-router-dom'
-import { ArrowRight, MessageCircle, Globe2, Building2, MapPin } from 'lucide-react'
-import { SITE_CONFIG } from '../lib/supabase'
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Building2,
+  CalendarDays,
+  GraduationCap,
+  Languages,
+  MapPin,
+  MessageCircle,
+  School,
+  Users,
+} from "lucide-react";
+import { SITE_CONFIG } from "../lib/supabase";
 
 interface University {
   name: string
@@ -183,230 +194,356 @@ const kosovoPrivate: University[] = [
     type: 'private',
   },
   { name: 'Kolegji Heimerer', abbr: 'HEIMERER', city: 'Prishtinë', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQvXlTHfjTY1O5EQuWhNJKXOIsD_hKJpUyiA&s', type: 'private' },
-  { name: 'Kolegji Biznesi', abbr: 'KB', city: 'Prishtinë', logo: 'https://kolegjibiznesi.com/Materialet/LogoKBPrishtine.png' },
+  { name: 'Kolegji Biznesi', abbr: 'KB', city: 'Prishtinë', logo: 'https://kolegjibiznesi.com/Materialet/LogoKBPrishtine.png', type: 'private' },
   { name: 'Kolegji Universum', abbr: 'UNIVERSUM', city: 'Prishtinë', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTSYiGvSOfzCTIFyHOIP0mRGDSkvpv4WtOfg&s', type: 'private' },
 ]
 
-const countries = [
-  { flag: '🇦🇱', name: 'Shqipëri', count: albaniaPublic.length + albaniaPrivate.length },
-  { flag: '🇽🇰', name: 'Kosovë', count: kosovoPublic.length + kosovoPrivate.length },
-  { flag: '🇲🇰', name: 'Maqedoni', count: null },
-  { flag: '🇲🇪', name: 'Mal i Zi', count: null },
+
+const northMacedoniaPublic: University[] = [
+  {
+    name: 'Universiteti i Tetovës',
+    abbr: 'UT',
+    city: 'Tetovë',
+    logo: 'https://unite.edu.mk/wp-content/uploads/2023/10/cropped-logo-512x512-1.png',
+    type: 'public',
+  },
+  {
+    name: 'Universiteti “Nënë Tereza”',
+    abbr: 'UNT',
+    city: 'Shkup',
+    logo: 'https://unt.edu.mk/wp-content/uploads/2016/10/unnamed-e1477506523758.jpg',
+    type: 'public',
+  },
 ]
 
-const languages = [
-  { code: 'SQ', name: 'Shqip' },
-  { code: 'EN', name: 'Anglisht' },
-  { code: 'IT', name: 'Italisht' },
+const northMacedoniaPrivate: University[] = [
+  {
+    name: 'Universiteti i Evropës Juglindore',
+    abbr: 'SEEU',
+    city: 'Tetovë',
+    logo: 'https://iconape.com/wp-content/files/ep/188937/png/188937.png',
+    type: 'private',
+  },
 ]
 
-function UniCard({ u }: { u: University }) {
+const montenegroPublic: University[] = [
+  {
+    name: 'Universiteti i Malit të Zi',
+    abbr: 'UCG',
+    city: 'Podgoricë',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/5/50/Logo_Univerzitet_Mediteran.png',
+    type: 'public',
+  },
+]
+
+const montenegroPrivate: University[] = []
+
+
+type CountryCode = "AL" | "XK" | "MK" | "ME";
+
+type CountryData = {
+  code: CountryCode;
+  name: string;
+  subtitle: string;
+  publicUnis: University[];
+  privateUnis: University[];
+};
+
+const countries: CountryData[] = [
+  {
+    code: "AL",
+    name: "Shqipëri",
+    subtitle: "Universitete publike dhe private në Shqipëri",
+    publicUnis: albaniaPublic,
+    privateUnis: albaniaPrivate,
+  },
+  {
+    code: "XK",
+    name: "Kosovë",
+    subtitle: "Universitete dhe kolegje në Kosovë",
+    publicUnis: kosovoPublic,
+    privateUnis: kosovoPrivate,
+  },
+  {
+    code: "MK",
+    name: "Maqedoni e Veriut",
+    subtitle: "Universitete me programe në shqip dhe anglisht",
+    publicUnis: northMacedoniaPublic,
+    privateUnis: northMacedoniaPrivate,
+  },
+  {
+    code: "ME",
+    name: "Mal i Zi",
+    subtitle: "Universitete dhe programe akademike në Malin e Zi",
+    publicUnis: montenegroPublic,
+    privateUnis: montenegroPrivate,
+  },
+];
+
+const stats = [
+  { value: "+400", label: "Studentë", icon: GraduationCap },
+  { value: "30+", label: "Universitete", icon: Building2 },
+  { value: "4", label: "Shtete", icon: MapPin },
+  { value: "3", label: "Gjuhë", icon: Languages },
+];
+
+function UniversityCard({ university }: { university: University }) {
   return (
-    <div className="bg-white border border-zinc-100 rounded-2xl p-4 flex flex-col items-center text-center gap-3 hover:border-amber-300 hover:shadow-md transition-all duration-200 group">
-      {/* Logo area */}
-      <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
-        {u.logo ? (
-          <img
-            src={u.logo}
-            alt={u.name}
-            className="max-w-full max-h-full object-contain"
-            onError={(e) => {
-              const target = e.currentTarget
-              target.style.display = 'none'
-              const fallback = target.nextElementSibling as HTMLElement | null
-              if (fallback) fallback.style.display = 'flex'
-            }}
-          />
-        ) : null}
-        {/* Fallback monogram */}
-        <div
-          className={`w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 font-serif font-bold text-sm leading-none ${u.logo ? 'hidden' : 'flex'}`}
-        >
-          {u.abbr.slice(0, 3)}
-        </div>
+    <article className="group flex min-w-0 items-center gap-3 rounded-[16px] border border-zinc-100 bg-white p-3 shadow-[0_8px_24px_rgba(24,24,27,0.04)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_30px_rgba(76,29,149,0.08)]">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-zinc-50">
+        {university.logo ? (
+          <>
+            <img
+              src={university.logo}
+              alt={university.name}
+              className="max-h-10 max-w-10 object-contain"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+                const fallback =
+                  event.currentTarget.nextElementSibling as HTMLElement | null;
+                if (fallback) fallback.style.display = "flex";
+              }}
+            />
+
+            <div className="hidden h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-[10px] font-bold text-violet-700">
+              {university.abbr.slice(0, 3)}
+            </div>
+          </>
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-[10px] font-bold text-violet-700">
+            {university.abbr.slice(0, 3)}
+          </div>
+        )}
       </div>
 
-      {/* Text */}
-      <div className="min-w-0 w-full">
-        <p className="font-semibold text-zinc-900 text-xs leading-snug line-clamp-2">{u.name}</p>
-        <p className="text-zinc-400 text-[11px] mt-1 flex items-center justify-center gap-1">
-          <MapPin className="w-3 h-3 flex-shrink-0" /> {u.city}
+      <div className="min-w-0">
+        <h3 className="line-clamp-2 text-[11px] font-bold leading-4 text-zinc-900 sm:text-xs">
+          {university.name}
+        </h3>
+
+        <p className="mt-1 flex items-center gap-1 text-[10px] text-zinc-400">
+          <MapPin className="h-3 w-3" />
+          {university.city}
         </p>
       </div>
-    </div>
-  )
+    </article>
+  );
 }
 
-function Section({ flag, country, publicUnis, privateUnis }: {
-  flag: string
-  country: string
-  publicUnis: University[]
-  privateUnis: University[]
+function UniversityGroup({
+  title,
+  universities,
+  accent,
+}: {
+  title: string;
+  universities: University[];
+  accent: "violet" | "zinc";
 }) {
+  if (universities.length === 0) return null;
+
   return (
-    <section className="container-academic mb-16">
-      <div className="flex items-center gap-3 mb-8">
-        <span className="text-4xl">{flag}</span>
-        <div>
-          <h2 className="font-serif text-2xl font-bold text-zinc-900">{country}</h2>
-          <p className="text-zinc-500 text-sm">{publicUnis.length + privateUnis.length} institucione</p>
-        </div>
+    <section>
+      <div className="flex items-center gap-2">
+        <span
+          className={`h-2 w-2 rounded-full ${
+            accent === "violet" ? "bg-violet-600" : "bg-zinc-400"
+          }`}
+        />
+
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
+          {title}
+        </p>
       </div>
 
-      {publicUnis.length > 0 && (
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500">Universitete Publike</h3>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {publicUnis.map((u) => <UniCard key={u.name} u={u} />)}
-          </div>
-        </div>
-      )}
-
-      {privateUnis.length > 0 && (
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="w-2 h-2 rounded-full bg-zinc-400" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500">Universitete &amp; Kolegje Private</h3>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {privateUnis.map((u) => <UniCard key={u.name} u={u} />)}
-          </div>
-        </div>
-      )}
+      <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+        {universities.map((university) => (
+          <UniversityCard key={university.name} university={university} />
+        ))}
+      </div>
     </section>
-  )
+  );
 }
 
 export default function Universities() {
+  const [activeCountry, setActiveCountry] = useState<CountryCode>("AL");
+
+  const selectedCountry =
+    countries.find((country) => country.code === activeCountry) ?? countries[0];
+
+  const totalInstitutions =
+    selectedCountry.publicUnis.length + selectedCountry.privateUnis.length;
+
+  const whatsappMessage =
+    "Përshëndetje! Dëshiroj informacion për një universitet që nuk është në listë.";
+
   return (
-    <div className="pt-24 pb-20">
-
-      {/* Hero */}
-      <section className="container-academic text-center mb-14">
-        <span className="section-label">Mbulimi ynë</span>
-        <h1 className="section-title mt-2 mb-4">Universitetet që shërbejmë</h1>
-        <p className="section-subtitle mx-auto mb-8">
-          Nga viti 2022, kemi ndihmuar studentë nga mbi 60 universitete dhe kolegje në 4 shtete.
-        </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          {[
-            { val: '+400', label: 'Studentë' },
-            { val: '60+', label: 'Universitete' },
-            { val: '4', label: 'Shtete' },
-            { val: '3', label: 'Gjuhë' },
-            { val: '2022', label: 'Nga viti' },
-          ].map((s) => (
-            <div key={s.val} className="bg-zinc-950 rounded-2xl px-5 py-3 text-center">
-              <p className="font-serif text-xl font-bold text-amber-400">{s.val}</p>
-              <p className="text-zinc-400 text-xs">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Country pills */}
-      <section className="container-academic mb-12">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {countries.map((c) => (
-            <div key={c.name} className="bg-white border border-zinc-100 rounded-2xl p-4 text-center shadow-sm">
-              <span className="text-3xl mb-2 block">{c.flag}</span>
-              <p className="font-serif font-bold text-zinc-900 text-sm">{c.name}</p>
-              {c.count && <p className="text-zinc-400 text-xs mt-0.5">{c.count} institucione</p>}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Albania */}
-      <Section flag="🇦🇱" country="Shqipëri" publicUnis={albaniaPublic} privateUnis={albaniaPrivate} />
-
-      {/* Kosovo */}
-      <Section flag="🇽🇰" country="Kosovë" publicUnis={kosovoPublic} privateUnis={kosovoPrivate} />
-
-      {/* Other countries */}
-      <section className="container-academic mb-14">
-        <div className="grid sm:grid-cols-2 gap-4">
-          {[
-            { flag: '🇲🇰', name: 'Maqedoni e Veriut', desc: 'Universitete me program akademik në gjuhën shqipe dhe anglisht.' },
-            { flag: '🇲🇪', name: 'Mal i Zi', desc: 'Universitete me program akademik në gjuhën shqipe dhe anglisht.' },
-          ].map((c) => (
-            <div key={c.name} className="bg-zinc-50 border border-zinc-200 rounded-2xl p-6 flex items-center gap-4">
-              <span className="text-4xl flex-shrink-0">{c.flag}</span>
-              <div>
-                <p className="font-serif font-bold text-zinc-900">{c.name}</p>
-                <p className="text-zinc-500 text-sm leading-relaxed mt-1">{c.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Languages */}
-      <section className="container-academic mb-14">
-        <h2 className="font-serif text-2xl font-bold text-zinc-900 mb-6">Gjuhët e punimit</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {languages.map((l) => (
-            <div key={l.code} className="bg-zinc-950 rounded-2xl p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-amber-400 flex items-center justify-center mx-auto mb-3">
-                <Globe2 className="w-6 h-6 text-zinc-900" />
-              </div>
-              <p className="font-serif text-lg font-bold text-white">{l.name}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* NIPT */}
-      <section className="container-academic mb-14">
-        <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-          <div className="w-12 h-12 rounded-xl bg-zinc-200 flex items-center justify-center flex-shrink-0">
-            <Building2 className="w-6 h-6 text-zinc-600" />
-          </div>
-          <div className="flex-1 grid sm:grid-cols-3 gap-4">
-            <div>
-              <p className="text-xs text-zinc-500 mb-1">Emri i subjektit</p>
-              <p className="font-bold text-zinc-900">temadiplome.ce</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 mb-1">NIPT</p>
-              <p className="font-bold text-zinc-900 font-mono">M51607036D</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 mb-1">Aktiv nga</p>
-              <p className="font-bold text-zinc-900">2022</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="container-academic">
-        <div className="bg-zinc-950 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-1/4 w-72 h-72 bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10">
-            <h2 className="font-serif text-3xl font-bold text-white mb-3">Universiteti juaj nuk është këtu?</h2>
-            <p className="text-zinc-400 mb-7 max-w-md mx-auto text-sm leading-relaxed">
-              Na kontaktoni gjithsesi. Punojmë me çdo institucion ku programi është në gjuhën shqipe, angleze ose italiane.
+    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
+      <section className="px-4 sm:px-5 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-violet-600">
+              Mbulimi ynë
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link to="/zgjidh-punimin" className="btn-primary justify-center">
-                Porosit tani <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a
-                href={`https://wa.me/${SITE_CONFIG.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-whatsapp justify-center"
+
+            <h1 className="mt-3 font-serif text-3xl font-bold text-zinc-950 sm:text-4xl lg:text-5xl">
+              Universitetet që shërbejmë
+            </h1>
+
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-zinc-500 sm:text-base">
+              Nga viti 2022 kemi mbështetur studentë nga universitete dhe
+              kolegje në Shqipëri, Kosovë, Maqedoninë e Veriut dhe Malin e Zi.
+            </p>
+          </div>
+
+<div className="mx-auto mt-8 grid max-w-[1050px] grid-cols-2 gap-3 lg:grid-cols-4">
+  {stats.map((stat) => {
+    const Icon = stat.icon;
+
+    return (
+      <article
+        key={stat.label}
+        className="flex min-h-[82px] items-center justify-center gap-3 rounded-[18px] border border-violet-100 bg-white px-4 py-3 shadow-[0_10px_28px_rgba(76,29,149,0.05)]"
+      >
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+          <Icon className="h-5 w-5" />
+        </div>
+
+        <div className="flex items-baseline gap-2 whitespace-nowrap">
+          <span className="font-serif text-lg font-bold text-zinc-950">
+            {stat.value}
+          </span>
+
+          <span className="text-sm text-zinc-500">
+            {stat.label}
+          </span>
+        </div>
+      </article>
+    );
+  })}
+</div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-8 pt-8 sm:px-5 lg:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="mx-auto grid w-full max-w-md grid-cols-4 gap-2">
+            {countries.map((country) => (
+              <button
+                key={country.code}
+                type="button"
+                onClick={() => setActiveCountry(country.code)}
+                className={`rounded-xl border px-3 py-2.5 text-xs font-bold transition ${
+                  activeCountry === country.code
+                    ? "border-violet-700 bg-gradient-to-r from-violet-700 to-purple-600 text-white shadow-lg shadow-violet-200/70"
+                    : "border-zinc-200 bg-white text-zinc-600 hover:border-violet-300 hover:text-violet-700"
+                }`}
               >
-                <MessageCircle className="w-4 h-4" /> Na shkruani
-              </a>
+                {country.code}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-8 border-t border-zinc-100 pt-7">
+            <div className="flex flex-col gap-2 border-b border-zinc-100 pb-5 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex items-center gap-3">
+                <span className="font-serif text-2xl font-bold text-violet-700">
+                  {selectedCountry.code}
+                </span>
+
+                <div>
+                  <h2 className="font-serif text-2xl font-bold text-zinc-950">
+                    {selectedCountry.name}
+                  </h2>
+
+                  <p className="mt-1 text-xs text-zinc-500">
+                    {selectedCountry.subtitle}
+                  </p>
+                </div>
+              </div>
+
+              {totalInstitutions > 0 && (
+                <p className="text-xs font-semibold text-zinc-500">
+                  {totalInstitutions} institucione
+                </p>
+              )}
             </div>
+
+            {totalInstitutions > 0 ? (
+              <div className="mt-7 space-y-8">
+                <UniversityGroup
+                  title="Universitete publike"
+                  universities={selectedCountry.publicUnis}
+                  accent="violet"
+                />
+
+                <UniversityGroup
+                  title="Universitete dhe kolegje private"
+                  universities={selectedCountry.privateUnis}
+                  accent="zinc"
+                />
+              </div>
+            ) : (
+              <div className="mt-7 rounded-[22px] border border-violet-100 bg-gradient-to-br from-violet-50/70 to-white px-5 py-9 text-center shadow-[0_10px_30px_rgba(76,29,149,0.05)]">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-violet-700">
+                  <School className="h-6 w-6" />
+                </div>
+
+                <h3 className="mt-4 font-serif text-xl font-bold text-zinc-950">
+                  Punojmë edhe me institucione të tjera
+                </h3>
+
+                <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-zinc-500">
+                  Na dërgo emrin e universitetit, programin dhe gjuhën e
+                  studimit për ta konfirmuar.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
+
+      <section className="px-4 pb-8 sm:px-5 lg:px-10">
+  <div className="mx-auto max-w-[1440px]">
+    <div className="relative overflow-hidden rounded-[24px] border border-violet-100 bg-gradient-to-r from-violet-50/80 via-white to-violet-50/40 px-5 py-7 shadow-[0_16px_44px_rgba(76,29,149,0.08)] sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-8 lg:px-10">
+      <div className="absolute -left-16 -top-20 h-56 w-56 rounded-full bg-violet-300/20 blur-3xl" />
+      <div className="absolute -bottom-24 right-0 h-64 w-64 rounded-full bg-purple-300/20 blur-3xl" />
+
+      <div className="relative flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 to-purple-500 text-white shadow-lg shadow-violet-200">
+          <School className="h-6 w-6" />
+        </div>
+
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600">
+            Nuk e gjete universitetin?
+          </p>
+
+          <h2 className="mt-2 font-serif text-2xl font-bold text-zinc-950 sm:text-3xl">
+            Na dërgo emrin e institucionit
+          </h2>
+
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600">
+            Punojmë edhe me universitete dhe programe që nuk janë ende në listë.
+            Mjafton të na dërgosh emrin, programin dhe gjuhën e studimit.
+          </p>
+        </div>
+      </div>
+
+      <a
+        href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=${encodeURIComponent(
+          whatsappMessage
+        )}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative mt-6 inline-flex w-full min-h-[50px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200/70 transition hover:-translate-y-0.5 lg:mt-0 lg:w-auto"
+      >
+        <MessageCircle className="h-4 w-4" />
+        Kontrollo universitetin
+        <ArrowRight className="h-4 w-4" />
+      </a>
     </div>
-  )
+  </div>
+</section>
+    </main>
+  );
 }

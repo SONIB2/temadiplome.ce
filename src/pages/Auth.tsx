@@ -184,64 +184,63 @@ export default function Auth() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setMessage("");
     setLoading(true);
+    setMessage("");
 
     const cleanEmail = loginEmail.trim().toLowerCase();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password: loginPassword,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: loginPassword,
+      });
 
-    if (error) {
-      console.error("Login error:", error);
-      setLoading(false);
-      setMessage("Email ose password i pasaktë.");
-      return;
-    }
+      if (error || !data.user) {
+        setMessage("Email ose fjalëkalim i pasaktë.");
+        return;
+      }
 
-    const loggedEmail = data.user.email?.toLowerCase();
+      if (cleanEmail === ADMIN_EMAIL) {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("currentUser");
+        window.location.href = "/admin";
+        return;
+      }
 
-    if (loggedEmail === ADMIN_EMAIL) {
+      const { data: profile, error: profileError } = await supabase
+        .from("user_agreements")
+        .select(
+          "auth_user_id, full_name, first_name, last_name, email, phone, country_code, university, study_field"
+        )
+        .eq("auth_user_id", data.user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Profile load error:", profileError);
+      }
+
+      const currentUser = profile || {
+        auth_user_id: data.user.id,
+        full_name:
+          data.user.user_metadata?.full_name ||
+          data.user.email?.split("@")[0] ||
+          "Student",
+        email: data.user.email || cleanEmail,
+      };
+
       localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          auth_user_id: data.user.id,
-          email: data.user.email,
-          full_name: "Admin",
-          role: "admin",
-        })
-      );
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
+      window.location.href = "/dashboard";
+    } catch (loginError) {
+      console.error("Login error:", loginError);
+      setMessage("Ndodhi një gabim gjatë hyrjes. Ju lutemi provoni përsëri.");
+    } finally {
       setLoading(false);
-      window.location.href = "/admin";
-      return;
     }
-
-    const { data: profile } = await supabase
-      .from("user_agreements")
-      .select(
-        "auth_user_id, first_name, last_name, full_name, email, phone, country_code, university, study_field, signature_name"
-      )
-      .eq("auth_user_id", data.user.id)
-      .maybeSingle();
-
-    const currentUser = profile || {
-      auth_user_id: data.user.id,
-      email: data.user.email,
-      
-    };
-
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("currentUser", JSON.stringify(currentUser));
-
-    setLoading(false);
-    window.location.href = "/dashboard";
   };
 
   const handleRegister = async (e: FormEvent) => {
@@ -324,7 +323,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.10),transparent_30%),#fafafa] px-5 pb-10 pt-24 lg:px-10 lg:pb-14 lg:pt-28">  <div className="mx-auto grid w-full max-w-[1440px] overflow-hidden rounded-[28px] border border-zinc-100 bg-white shadow-[0_28px_80px_rgba(24,24,27,0.12)] lg:grid-cols-[0.9fr_1.1fr]">  <div className="relative hidden min-h-[640px] overflow-hidden p-10 text-white lg:flex lg:flex-col lg:justify-between lg:p-12">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.10),transparent_30%),#fafafa] px-5 pb-10 pt-24 lg:px-10 lg:pb-14 lg:pt-28">  <div className="mx-auto grid w-full max-w-[1440px] items-stretch overflow-hidden rounded-[28px] border border-zinc-100 bg-white shadow-[0_28px_80px_rgba(24,24,27,0.12)] lg:grid-cols-[0.9fr_1.1fr]">  <div className="relative hidden overflow-hidden p-10 text-white lg:flex lg:flex-col lg:p-12">
           <img
             src="/images/home/testimonials-background.jpg"
             alt=""
@@ -332,7 +331,7 @@ export default function Auth() {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#090714]/95 via-[#160d2d]/90 to-violet-950/85" />
           <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-violet-600/30 blur-3xl" />
-          <div className="relative flex h-full flex-col justify-between">
+          <div className="relative flex h-full flex-col">
           <div>
             <img
               src="/images/home/logo2.png"
@@ -385,8 +384,7 @@ export default function Auth() {
 
           <Link
             to="/"
-            className="mt-10 inline-flex items-center gap-2 text-sm text-zinc-300 transition hover:text-white"
-          >
+            className="mt-8 inline-flex items-center gap-2 text-sm text-zinc-300 transition hover:text-white">
             ← Kthehu në faqen kryesore
           </Link>
           </div>
