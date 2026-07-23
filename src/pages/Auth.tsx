@@ -110,15 +110,15 @@ export default function Auth() {
     const phoneRegex = /^[0-9]{7,12}$/;
 
     if (!formData.first_name.trim()) {
-      newErrors.first_name = "Emri është i detyrueshëm. Shembull: Sonila";
+      newErrors.first_name = "Emri është i detyrueshëm. Shembull: Maria";
     } else if (!nameRegex.test(formData.first_name.trim())) {
-      newErrors.first_name = "Vendosni një emër të vlefshëm. Shembull: Sonila";
+      newErrors.first_name = "Vendosni një emër të vlefshëm. Shembull: Maria";
     }
 
     if (!formData.last_name.trim()) {
-      newErrors.last_name = "Mbiemri është i detyrueshëm. Shembull: Balla";
+      newErrors.last_name = "Mbiemri është i detyrueshëm. Shembull: Hoxha";
     } else if (!nameRegex.test(formData.last_name.trim())) {
-      newErrors.last_name = "Vendosni një mbiemër të vlefshëm. Shembull: Balla";
+      newErrors.last_name = "Vendosni një mbiemër të vlefshëm. Shembull: Hoxha";
     }
 
     if (!formData.email.trim()) {
@@ -536,7 +536,7 @@ export default function Auth() {
                     <input
                       name="first_name"
                       type="text"
-                      placeholder="Emri, p.sh. Sonila"
+                      placeholder="Emri"
                       value={formData.first_name}
                       onChange={handleRegisterChange}
                       required
@@ -551,7 +551,7 @@ export default function Auth() {
                     <input
                       name="last_name"
                       type="text"
-                      placeholder="Mbiemri, p.sh. Balla"
+                      placeholder="Mbiemri"
                       value={formData.last_name}
                       onChange={handleRegisterChange}
                       required
