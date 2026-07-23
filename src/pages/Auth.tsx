@@ -123,17 +123,17 @@ export default function Auth() {
 
     if (!formData.email.trim()) {
       newErrors.email =
-        "Email-i është i detyrueshëm. Shembull: emri@gmail.com";
+        "Email-i është i detyrueshëm";
     } else if (!emailRegex.test(formData.email.trim())) {
       newErrors.email = "Email-i nuk është i saktë. Shembull: emri@gmail.com";
     }
 
     if (!formData.phone.trim()) {
       newErrors.phone =
-        "Numri i WhatsApp është i detyrueshëm. Shembull: 685671586";
+        "Numri i WhatsApp është i detyrueshëm. Shembull: 685656565";
     } else if (!phoneRegex.test(formData.phone.trim())) {
       newErrors.phone =
-        "Shkruani vetëm numra, pa hapësira. Shembull: 685671586";
+        "Shkruani vetëm numra, pa hapësira. Shembull: 685656565";
     }
 
     if (!formData.university.trim()) {
@@ -627,7 +627,7 @@ export default function Auth() {
                       name="phone"
                       type="tel"
                       inputMode="numeric"
-                      placeholder="WhatsApp, p.sh. 685671586"
+                      placeholder="WhatsApp, p.sh. 685656565"
                       value={formData.phone}
                       onChange={(e) => {
                         const onlyNumbers = e.target.value.replace(/\D/g, "");
