@@ -612,19 +612,19 @@ export default function Auth() {
                 </div>
 
                 <div>
-                  <div className="flex gap-2">
- <select
-  name="country_code"
-  value={formData.country_code}
-  onChange={handleRegisterChange}
-  className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900"
->
-  {countryCodes.map((country) => (
-    <option key={country.code} value={country.code}>
-      {country.label}
-    </option>
-  ))}
-</select>
+                  <div className="grid grid-cols-[minmax(190px,0.85fr)_minmax(0,2fr)] gap-3">
+  <select
+    name="country_code"
+    value={formData.country_code}
+    onChange={handleRegisterChange}
+    className="h-[68px] w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm text-zinc-900 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+  >
+    {countryCodes.map((country) => (
+      <option key={country.code} value={country.code}>
+        {country.label}
+      </option>
+    ))}
+  </select>
 
                     <input
                       name="phone"
