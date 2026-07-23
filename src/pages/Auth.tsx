@@ -33,8 +33,8 @@ const countryCodes = [
   { code: "+49", label: "🇩🇪 Gjermani (+49)" },
   { code: "+44", label: "🇬🇧 United Kingdom (+44)" },
   { code: "+33", label: "🇫🇷 Francë (+33)" },
-  { code: "+1", label: "🇺🇸🇨🇦 USA / Kanada (+1)" },
-]
+  { code: "+1", label: "🇺🇸 USA / 🇨🇦 Kanada (+1)" },
+];
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -613,11 +613,11 @@ export default function Auth() {
 
                 <div>
                   <div className="flex gap-2">
-                    <select
+ <select
   name="country_code"
   value={formData.country_code}
   onChange={handleRegisterChange}
-  className="..."
+  className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900"
 >
   {countryCodes.map((country) => (
     <option key={country.code} value={country.code}>
