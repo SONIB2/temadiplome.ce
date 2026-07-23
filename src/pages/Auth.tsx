@@ -24,13 +24,15 @@ type FormErrors = {
 };
 
 const countryCodes = [
-  { code: "+355", label: "Shqipëri (+355)" },
-  { code: "+383", label: "Kosovë (+383)" },
-  { code: "+39", label: "Itali (+39)" },
-  { code: "+44", label: "UK (+44)" },
-  { code: "+49", label: "Gjermani (+49)" },
-  { code: "+33", label: "Francë (+33)" },
-  { code: "+1", label: "USA / Kanada (+1)" },
+  { code: "+355", label: "🇦🇱 Shqipëri (+355)" },
+  { code: "+383", label: "🇽🇰 Kosovë (+383)" },
+  { code: "+389", label: "🇲🇰 Maqedonia e Veriut (+389)" },
+  { code: "+382", label: "🇲🇪 Mali i Zi (+382)" },
+  { code: "+39", label: "🇮🇹 Itali (+39)" },
+  { code: "+44", label: "🇬🇧 United Kingdom (+44)" },
+  { code: "+49", label: "🇩🇪 Gjermani (+49)" },
+  { code: "+33", label: "🇫🇷 Francë (+33)" },
+  { code: "+1", label: "🇺🇸 USA / 🇨🇦 Kanada (+1)" },
 ];
 
 function FieldError({ message }: { message?: string }) {
