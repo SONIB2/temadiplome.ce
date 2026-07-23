@@ -28,12 +28,13 @@ const countryCodes = [
   { code: "+383", label: "🇽🇰 Kosovë (+383)" },
   { code: "+389", label: "🇲🇰 Maqedonia e Veriut (+389)" },
   { code: "+382", label: "🇲🇪 Mali i Zi (+382)" },
+  { code: "+30", label: "🇬🇷 Greqi (+30)" },
   { code: "+39", label: "🇮🇹 Itali (+39)" },
-  { code: "+44", label: "🇬🇧 United Kingdom (+44)" },
   { code: "+49", label: "🇩🇪 Gjermani (+49)" },
+  { code: "+44", label: "🇬🇧 United Kingdom (+44)" },
   { code: "+33", label: "🇫🇷 Francë (+33)" },
-  { code: "+1", label: "🇺🇸 USA / 🇨🇦 Kanada (+1)" },
-];
+  { code: "+1", label: "🇺🇸🇨🇦 USA / Kanada (+1)" },
+]
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -613,17 +614,17 @@ export default function Auth() {
                 <div>
                   <div className="flex gap-2">
                     <select
-                      name="country_code"
-                      value={formData.country_code}
-                      onChange={handleRegisterChange}
-                      className="w-40 rounded-xl border border-zinc-200 bg-white px-3 py-3.5 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
-                    >
-                      {countryCodes.map((item) => (
-                        <option key={item.code} value={item.code}>
-                          {item.label}
-                        </option>
-                      ))}
-                    </select>
+  name="country_code"
+  value={formData.country_code}
+  onChange={handleRegisterChange}
+  className="..."
+>
+  {countryCodes.map((country) => (
+    <option key={country.code} value={country.code}>
+      {country.label}
+    </option>
+  ))}
+</select>
 
                     <input
                       name="phone"
