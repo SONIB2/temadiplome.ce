@@ -1,12 +1,12 @@
 User-agent: *
 Allow: /
 
-Disallow: /admin
-Disallow: /dashboard
-Disallow: /auth
-Disallow: /login
-Disallow: /register
-Disallow: /my-orders
-Disallow: /order-tracking
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /login/
+Disallow: /register/
+Disallow: /my-orders/
+Disallow: /order-tracking/
 
 Sitemap: https://temadiplome.org/sitemap.xml
