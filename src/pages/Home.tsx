@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
@@ -185,7 +186,14 @@ export default function Home() {
     window.location.href = "/dashboard";
   };
 
-  return (
+return (
+  <>
+    <SEO
+      title="Asistencë Akademike, SPSS, APA dhe PowerPoint"
+      description="Asistencë akademike profesionale për strukturimin e temave, analizë SPSS, referenca APA, PowerPoint, konsultim dhe materiale falas."
+      path="/"
+    />
+
     <main className="w-full max-w-full overflow-x-hidden bg-white text-zinc-950">
       <style>{`
         @keyframes reviewMarquee {
@@ -211,7 +219,9 @@ export default function Home() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .review-marquee { animation: none; }
+          .review-marquee {
+            animation: none;
+          }
         }
       `}</style>
 
@@ -611,6 +621,7 @@ export default function Home() {
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-    </main>
-  );
+      </main>
+  </>
+);
 }
