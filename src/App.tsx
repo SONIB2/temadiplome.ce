@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 
 import Header from "./components/Header";
@@ -5,6 +6,7 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
 import TermsPopup from "./components/TermsPopup";
 import BackToTopButton from "./components/BackToTopButton";
+import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 import Services from "./pages/Services";
@@ -19,7 +21,6 @@ import FreeMaterials from "./pages/FreeMaterials";
 import Admin from "./pages/Admin";
 import Universities from "./pages/Universities";
 import Portfolio from "./pages/Portfolio";
-import Footer from "./components/Footer";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import CookiePolicy from "./pages/CookiePolicy";
@@ -31,10 +32,23 @@ import Dashboard from "./pages/Dashboard";
 import MyOrders from "./pages/MyOrders";
 import OrderTracking from "./pages/OrderTracking";
 
+import { initGA, trackPageView } from "./lib/analytics";
+
 export default function App() {
   const location = useLocation();
 
   const isAdminPage = location.pathname.startsWith("/admin");
+
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  useEffect(() => {
+    const fullPath =
+      location.pathname + location.search + location.hash;
+
+    trackPageView(fullPath);
+  }, [location.pathname, location.search, location.hash]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -54,8 +68,14 @@ export default function App() {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/materiale-falas" element={<FreeMaterials />} />
-          <Route path="/universitetet" element={<Universities />} />
+          <Route
+            path="/materiale-falas"
+            element={<FreeMaterials />}
+          />
+          <Route
+            path="/universitetet"
+            element={<Universities />}
+          />
           <Route path="/portofoli" element={<Portfolio />} />
 
           {/* Authentication */}
@@ -63,21 +83,36 @@ export default function App() {
 
           {/* User pages */}
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/zgjidh-punimin" element={<OrderWork />} />
+          <Route
+            path="/zgjidh-punimin"
+            element={<OrderWork />}
+          />
           <Route path="/my-orders" element={<MyOrders />} />
-          <Route path="/order-tracking" element={<OrderTracking />} />
+          <Route
+            path="/order-tracking"
+            element={<OrderTracking />}
+          />
 
           {/* Admin */}
           <Route path="/admin" element={<Admin />} />
 
           {/* Legal pages */}
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route
+            path="/privacy-policy"
+            element={<PrivacyPolicy />}
+          />
           <Route
             path="/terms-and-conditions"
             element={<TermsConditions />}
           />
-          <Route path="/cookie-policy" element={<CookiePolicy />} />
-          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route
+            path="/cookie-policy"
+            element={<CookiePolicy />}
+          />
+          <Route
+            path="/refund-policy"
+            element={<RefundPolicy />}
+          />
           <Route
             path="/academic-integrity"
             element={<AcademicIntegrity />}
@@ -87,6 +122,7 @@ export default function App() {
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
+
       {!isAdminPage && <Footer />}
       {!isAdminPage && <BackToTopButton />}
       {!isAdminPage && <WhatsAppButton />}
