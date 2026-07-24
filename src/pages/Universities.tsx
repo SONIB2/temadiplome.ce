@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -376,9 +377,15 @@ export default function Universities() {
   const whatsappMessage =
     "Përshëndetje! Dëshiroj informacion për një universitet që nuk është në listë.";
 
-  return (
-    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
-      <section className="px-4 sm:px-5 lg:px-10">
+return (
+  <>
+    <SEO
+      title="Universitetet që Shërbejmë"
+      description="Shiko universitetet dhe kolegjet me të cilat punojmë në Shqipëri, Kosovë, Maqedoninë e Veriut dhe Malin e Zi."
+      path="/universitetet"
+    />
+
+    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">      <section className="px-4 sm:px-5 lg:px-10">
         <div className="mx-auto max-w-[1440px]">
           <div className="text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-violet-600">
@@ -544,6 +551,7 @@ export default function Universities() {
     </div>
   </div>
 </section>
-    </main>
-  );
+       </main>
+  </>
+);
 }

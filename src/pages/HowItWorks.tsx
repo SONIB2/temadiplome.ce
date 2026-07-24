@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -60,6 +61,13 @@ export default function HowItWorks() {
     "Përshëndetje! Dëshiroj një konsultim falas dhe më shumë informacion për procesin.";
 
   return (
+  <>
+    <SEO
+      title="Si Funksionon"
+      description="Shiko hapat e procesit të asistencës akademike, nga konsultimi fillestar deri te strukturimi, analiza dhe dorëzimi i materialeve."
+      path="/si-funksionon"
+    />
+
     <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-20 sm:pt-24">
       {/* PROCESS */}
       <section className="px-4 sm:px-5 lg:px-10">
@@ -250,7 +258,8 @@ export default function HowItWorks() {
             </a>
           </div>
         </div>
-      </section>
+          </section>
     </main>
-  );
+  </>
+);
 }

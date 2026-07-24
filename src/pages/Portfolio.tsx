@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -110,8 +111,14 @@ export default function Portfolio() {
     "Përshëndetje! Dëshiroj një template të personalizuar sipas kërkesave të universitetit tim.";
 
   return (
-    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
-      {/* INTRO */}
+  <>
+    <SEO
+      title="Template Universitare dhe Shembuj Strukturash"
+      description="Shkarko template universitare për Bachelor, Master dhe PowerPoint. Shembuj strukturash akademike sipas standardeve më të përdorura."
+      path="/portofoli"
+    />
+
+    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">    {/* INTRO */}
       <section className="px-4 sm:px-5 lg:px-10">
         <div className="mx-auto max-w-[1440px] text-center">
           <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-violet-600">
@@ -119,7 +126,7 @@ export default function Portfolio() {
           </p>
 
           <h1 className="mt-3 font-serif text-3xl font-bold text-zinc-950 sm:text-4xl lg:text-5xl">
-            Template Universitare
+            Template Universitare për Bachelor, Master dhe PowerPoint
           </h1>
 
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-zinc-500 sm:text-base">
@@ -176,7 +183,7 @@ export default function Portfolio() {
       className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition ${theme.button}`}
     >
       <Download className="h-4 w-4" />
-      Shkarko template
+      Shkarkoni template universitare për Bachelor, Master dhe prezantime PowerPoint, të përgatitura sipas standardeve akademike dhe udhëzimeve më të përdorura.
     </a>
   </div>
 </article>
@@ -299,6 +306,7 @@ export default function Portfolio() {
     </div>
   </div>
 </section>
-    </main>
-  );
+       </main>
+  </>
+);
 }

@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -159,8 +160,14 @@ export default function Blog() {
     "Përshëndetje! Kam nevojë për orientim akademik dhe dëshiroj më shumë informacion.";
 
   return (
-    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
-      {/* HERO */}
+  <>
+    <SEO
+      title="Blog Akademik"
+      description="Lexo artikuj dhe guida për temat e diplomës, analizën SPSS, referencat APA, strukturimin e punimeve dhe mbrojtjen e diplomës."
+      path="/blog"
+    />
+
+    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">    {/* HERO */}
       <section className="px-4 sm:px-5 lg:px-10">
         <div className="mx-auto max-w-[1440px] text-center">
           <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-violet-600">
@@ -274,6 +281,7 @@ export default function Blog() {
        
         </>
       )}
-    </main>
-  );
+        </main>
+  </>
+);
 }

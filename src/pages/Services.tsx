@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import type { ElementType } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -134,6 +135,7 @@ const services: Service[] = [
 ];
 
 export default function Services() {
+  
   const whatsappMessage =
     "Përshëndetje! Dëshiroj informacion për shërbimet dhe çmimet.";
 
@@ -150,6 +152,13 @@ export default function Services() {
   };
 
   return (
+  <>
+    <SEO
+      title="Shërbimet e Asistencës Akademike"
+      description="Shërbime për strukturim dhe organizim, referenca APA, analizë SPSS, PowerPoint, konsultim dhe orientim akademik."
+      path="/sherbimet"
+    />
+
     <main className="w-full max-w-full overflow-x-hidden bg-white pb-6 pt-24 lg:pt-28">
       <section className="px-4 sm:px-5 lg:px-10">
         <div className="mx-auto max-w-[1440px] text-center">
@@ -256,6 +265,7 @@ export default function Services() {
           </div>
         </div>
       </section>
-    </main>
-  );
+        </main>
+  </>
+);
 }

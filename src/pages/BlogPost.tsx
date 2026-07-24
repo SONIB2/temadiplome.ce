@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -202,6 +203,19 @@ export default function BlogPost() {
     }
   };
 
+  <>
+  <SEO
+    title="Artikulli nuk u gjet"
+    description="Artikulli që po kërkoni nuk ekziston ose është zhvendosur."
+    path="/blog"
+    noIndex
+  />
+
+  <main>
+    ...
+  </main>
+</>
+
   if (!post) {
     return (
       <main className="flex min-h-[70vh] items-center justify-center px-4 pt-24">
@@ -229,8 +243,14 @@ export default function BlogPost() {
   const whatsappMessage = `Përshëndetje! Kam nevojë për ndihmë lidhur me artikullin: ${post.title}`;
 
   return (
-    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
-      {/* BACK */}
+  <>
+    <SEO
+      title={post.title}
+      description={post.excerpt}
+      path={`/blog/${post.slug}`}
+    />
+
+    <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">    {/* BACK */}
       <section className="px-4 sm:px-5 lg:px-10">
         <div className="mx-auto max-w-[1100px]">
           <Link
@@ -467,6 +487,7 @@ export default function BlogPost() {
           </div>
         </div>
       </section>
-    </main>
-  );
+        </main>
+  </>
+);
 }

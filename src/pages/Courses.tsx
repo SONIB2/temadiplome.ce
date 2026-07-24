@@ -1,3 +1,4 @@
+import SEO from "../components/SEO"
 import { useState, useEffect } from 'react'
 import { FileText, Download, CheckCircle2, CreditCard, ArrowRight, BookOpen, Star, X } from 'lucide-react'
 import { supabase, formatPrice } from '../lib/supabase'
@@ -63,8 +64,14 @@ export default function Courses() {
     </div>
   )
 
-  if (done) {
-    return (
+ if (done) {
+  return (
+    <>
+      <SEO
+        title="Kurs PDF për Temën e Diplomës"
+        description="Mëso hap pas hapi si të strukturosh një temë diplome, të përdorësh referencat APA, analizën SPSS dhe të përgatitesh për mbrojtje."
+        path="/kurse"
+      />
       <div className="pt-24 pb-20 min-h-screen flex items-center justify-center">
         <div className="container-academic max-w-lg">
           <div className="bg-white rounded-3xl p-10 text-center shadow-xl border border-zinc-100">
@@ -88,8 +95,10 @@ export default function Courses() {
         </div>
       </div>
     )
+       </>
+        );
   }
-
+  
   return (
     <div className="pt-24 pb-20">
       <section className="container-academic text-center mb-12">

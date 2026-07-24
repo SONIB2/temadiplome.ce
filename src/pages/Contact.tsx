@@ -1,3 +1,4 @@
+import SEO from "../components/SEO";
 import { useState } from "react";
 import {
   ArrowRight,
@@ -73,6 +74,13 @@ export default function Contact() {
     "w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100";
 
   return (
+  <>
+    <SEO
+      title="Kontakt"
+      description="Kontakto TemaDiplome.org për konsultim, orientim dhe asistencë akademike për temën, analizën SPSS, referencat APA ose PowerPoint."
+      path="/kontakt"
+    />
+
     <main className="w-full max-w-full overflow-x-hidden bg-white pb-0 pt-24 lg:pt-28">
       {/* PAGE INTRO */}
       <section className="px-4 sm:px-5 lg:px-10">
@@ -86,7 +94,7 @@ export default function Contact() {
           </h1>
 
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-zinc-500 sm:text-base">
-            Jemi këtu për t&apos;ju ndihmuar me pyetjet dhe kërkesat tuaja.
+            Na kontaktoni për konsultim akademik, analizë SPSS, referenca APA, PowerPoint, strukturim punimesh dhe çdo pyetje rreth shërbimeve tona.
           </p>
 
           <div className="mx-auto mt-4 h-0.5 w-10 rounded-full bg-violet-600" />
@@ -350,6 +358,7 @@ export default function Contact() {
           <FAQ />
         </div>
       </section>
-    </main>
-  );
+        </main>
+  </>
+);
 }
