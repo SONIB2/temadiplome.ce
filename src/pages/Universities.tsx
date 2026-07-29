@@ -100,13 +100,6 @@ const albaniaPublic: University[] = [
     logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnhcsTcH67RS9tY96wArxDNNd71ByP4BqUfw&s',
     type: 'public',
   },
-  {
-    name: 'Universiteti Katolik "Zoja e Këshillit të Mirë"',
-    abbr: 'UKZKM',
-    city: 'Tiranë',
-    logo: 'https://www.ascal.al/en/hei-list/hei/universiteti-katolik-zoja-e-keshillit-te-mire-2',
-    type: 'public',
-  },
 ]
 
 const albaniaPrivate: University[] = [
