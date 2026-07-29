@@ -41,7 +41,7 @@ const albaniaPublic: University[] = [
     name: 'Universiteti Bujqësor i Tiranës',
     abbr: 'UBT',
     city: 'Tiranë',
-    logo: 'https://al.h-index.com/web/uploads/images/N0YEY-.png',
+    logo: 'https://www.ubt.edu.al/web/image/website/1/logo/UBT%20%7C%20Universiteti%20Bujq%C3%ABsor%20i%20Tiran%C3%ABs?unique=723fb0e',
     type: 'public',
   },
   {
