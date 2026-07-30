@@ -282,7 +282,7 @@ const saveSelected = async () => {
   let emailError: unknown = null;
 
   if (statusChanged && newStatus !== "rejected") {
-    const { error } = await supabase.functions.invoke(
+    const { data, error } = await supabase.functions.invoke(
       "send-order-status-update",
       {
         body: {
@@ -300,11 +300,8 @@ const saveSelected = async () => {
       }
     );
 
+    console.log("Status email response:", { data, error });
     emailError = error;
-
-    if (error) {
-      console.error("Status email error:", error);
-    }
   }
 
   const updatedOrder: Order = {
