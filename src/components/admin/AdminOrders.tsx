@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
+  Ban,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -12,6 +13,7 @@ import {
   RefreshCw,
   Save,
   Search,
+  Trash2,
   Upload,
   X,
 } from "lucide-react";
@@ -38,6 +40,10 @@ interface Order {
   admin_note?: string;
   final_file_url?: string;
   final_file_name?: string;
+  rejection_reason?: string;
+  rejected_at?: string;
+  rejection_email_sent_at?: string;
+  deleted_at?: string;
   created_at: string;
 }
 
@@ -50,6 +56,7 @@ const statuses = [
   { value: "completed", label: "Përfunduar" },
   { value: "delivered", label: "Dorëzuar" },
   { value: "cancelled", label: "Anuluar" },
+  { value: "rejected", label: "Refuzuar" },
 ];
 
 const statusColors: Record<string, string> = {
@@ -59,6 +66,7 @@ const statusColors: Record<string, string> = {
   completed: "border-emerald-200 bg-emerald-50 text-emerald-700",
   delivered: "border-sky-200 bg-sky-50 text-sky-700",
   cancelled: "border-red-200 bg-red-50 text-red-700",
+  rejected: "border-rose-200 bg-rose-50 text-rose-700",
 };
 
 const weekDays = ["Hën", "Mar", "Mër", "Enj", "Pre", "Sht", "Die"];
@@ -202,15 +210,20 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [rejectingOrder, setRejectingOrder] = useState<Order | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
+
 
   const load = async () => {
     setLoading(true);
     setMessage("");
 
     const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
+  .from("orders")
+  .select("*")
+  .is("deleted_at", null)
+  .order("created_at", { ascending: false });
 
     if (error) {
       console.error("Orders load error:", error);
@@ -273,6 +286,148 @@ export default function AdminOrders() {
     setMessage("Statusi u përditësua me sukses.");
     setSaving(false);
   };
+
+  const rejectOrder = async () => {
+  if (!rejectingOrder) return;
+
+  const cleanReason = rejectionReason.trim();
+
+  if (!cleanReason) {
+    setMessage("Shkruaj arsyen e refuzimit.");
+    return;
+  }
+
+  setActionLoading(true);
+  setMessage("");
+
+  const now = new Date().toISOString();
+
+  const { error: updateError } = await supabase
+    .from("orders")
+    .update({
+      order_status: "rejected",
+      rejection_reason: cleanReason,
+      rejected_at: now,
+      updated_at: now,
+    })
+    .eq("id", rejectingOrder.id);
+
+  if (updateError) {
+    console.error("Order rejection error:", updateError);
+    setMessage("Porosia nuk u refuzua. Provo përsëri.");
+    setActionLoading(false);
+    return;
+  }
+
+  const { error: emailError } = await supabase.functions.invoke(
+    "send-order-rejection",
+    {
+      body: {
+        orderId: rejectingOrder.id,
+        fullName: rejectingOrder.full_name,
+        email: rejectingOrder.email,
+        topic:
+          rejectingOrder.topic ||
+          rejectingOrder.work_type ||
+          "Kërkesa juaj",
+        reason: cleanReason,
+      },
+    }
+  );
+
+  if (!emailError) {
+    await supabase
+      .from("orders")
+      .update({
+        rejection_email_sent_at: new Date().toISOString(),
+      })
+      .eq("id", rejectingOrder.id);
+  }
+
+  setOrders((previous) =>
+    previous.map((order) =>
+      order.id === rejectingOrder.id
+        ? {
+            ...order,
+            order_status: "rejected",
+            rejection_reason: cleanReason,
+            rejected_at: now,
+            rejection_email_sent_at: emailError
+              ? undefined
+              : new Date().toISOString(),
+          }
+        : order
+    )
+  );
+
+  if (selected?.id === rejectingOrder.id) {
+    setSelected((current) =>
+      current
+        ? {
+            ...current,
+            order_status: "rejected",
+            rejection_reason: cleanReason,
+            rejected_at: now,
+          }
+        : null
+    );
+  }
+
+  setRejectingOrder(null);
+  setRejectionReason("");
+  setActionLoading(false);
+
+  if (emailError) {
+    console.error("Rejection email error:", emailError);
+    setMessage(
+      "Porosia u refuzua, por email-i nuk u dërgua. Kontrollo Edge Function."
+    );
+  } else {
+    setMessage("Porosia u refuzua dhe studenti u njoftua me email.");
+  }
+};
+
+const softDeleteOrder = async (order: Order) => {
+  const confirmed = window.confirm(
+    `A je e sigurt që dëshiron të fshish porosinë e ${order.full_name}?`
+  );
+
+  if (!confirmed) return;
+
+  setActionLoading(true);
+  setMessage("");
+
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      deleted_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", order.id);
+
+  if (error) {
+    console.error("Order soft delete error:", error);
+    setMessage("Porosia nuk u fshi. Provo përsëri.");
+    setActionLoading(false);
+    return;
+  }
+
+  setOrders((previous) =>
+    previous.filter((currentOrder) => currentOrder.id !== order.id)
+  );
+
+  if (selected?.id === order.id) {
+    setSelected(null);
+  }
+
+  if (rejectingOrder?.id === order.id) {
+    setRejectingOrder(null);
+    setRejectionReason("");
+  }
+
+  setMessage("Porosia u hoq nga paneli.");
+  setActionLoading(false);
+};
 
   const uploadFinalFile = async (file: File) => {
     if (!selected) return;
@@ -361,7 +516,7 @@ export default function AdminOrders() {
       [...orders]
         .filter((order) => {
           const status = order.order_status || "received";
-          return !["completed", "delivered", "cancelled"].includes(status);
+          return !["completed", "delivered", "cancelled", "rejected"].includes(status);
         })
         .filter((order) => Boolean(order.deadline))
         .sort((first, second) => {
@@ -757,12 +912,12 @@ export default function AdminOrders() {
         <section className="overflow-hidden rounded-[24px] border border-zinc-100 bg-white shadow-[0_16px_48px_rgba(24,24,27,0.05)]">
           {/* DESKTOP TABLE */}
           <div className="hidden lg:block">
-            <div className="grid grid-cols-[1.05fr_1.45fr_0.82fr_0.86fr_58px] gap-4 border-b border-zinc-100 bg-zinc-50/80 px-5 py-4 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+            <div className="grid grid-cols-[1.05fr_1.45fr_0.82fr_0.86fr_154px] gap-4 border-b border-zinc-100 bg-zinc-50/80 px-5 py-4 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
               <span>Studenti</span>
               <span>Porosia</span>
               <span>Afati</span>
               <span>Statusi</span>
-              <span />
+              <span>Veprime</span>
             </div>
 
             {filteredOrders.map((order) => {
@@ -772,7 +927,7 @@ export default function AdminOrders() {
               return (
                 <article
                   key={order.id}
-                  className="grid grid-cols-[1.05fr_1.45fr_0.82fr_0.86fr_58px] items-center gap-4 border-b border-zinc-100 px-5 py-5 last:border-b-0 hover:bg-violet-50/25"
+                  className="grid grid-cols-[1.05fr_1.45fr_0.82fr_0.86fr_154px] items-center gap-4 border-b border-zinc-100 px-5 py-5 last:border-b-0 hover:bg-violet-50/25"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-zinc-950">
@@ -834,14 +989,43 @@ export default function AdminOrders() {
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => openOrder(order)}
-                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 text-violet-700 transition hover:bg-violet-100"
-                    aria-label={`Shiko porosinë e ${order.full_name}`}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
+                  <div className="flex items-center justify-end gap-2">
+  <button
+    type="button"
+    onClick={() => openOrder(order)}
+    className="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 text-violet-700 transition hover:bg-violet-100"
+    aria-label={`Shiko porosinë e ${order.full_name}`}
+    title="Shiko"
+  >
+    <Eye className="h-4 w-4" />
+  </button>
+
+  <button
+    type="button"
+    onClick={() => {
+      setRejectingOrder(order);
+      setRejectionReason(order.rejection_reason || "");
+      setMessage("");
+    }}
+    disabled={actionLoading || currentStatus === "rejected"}
+    className="flex h-10 w-10 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-orange-700 transition hover:bg-orange-100 disabled:cursor-not-allowed disabled:opacity-40"
+    aria-label={`Refuzo porosinë e ${order.full_name}`}
+    title="Refuzo"
+  >
+    <Ban className="h-4 w-4" />
+  </button>
+
+  <button
+    type="button"
+    onClick={() => softDeleteOrder(order)}
+    disabled={actionLoading}
+    className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-100 bg-red-50 text-red-600 transition hover:bg-red-100 disabled:opacity-40"
+    aria-label={`Fshi porosinë e ${order.full_name}`}
+    title="Fshi"
+  >
+    <Trash2 className="h-4 w-4" />
+  </button>
+</div>
                 </article>
               );
             })}
@@ -869,13 +1053,43 @@ export default function AdminOrders() {
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => openOrder(order)}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openOrder(order)}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700"
+                        aria-label={`Shiko porosinë e ${order.full_name}`}
+                        title="Shiko"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRejectingOrder(order);
+                          setRejectionReason(order.rejection_reason || "");
+                          setMessage("");
+                        }}
+                        disabled={actionLoading || currentStatus === "rejected"}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-700 disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label={`Refuzo porosinë e ${order.full_name}`}
+                        title="Refuzo"
+                      >
+                        <Ban className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => softDeleteOrder(order)}
+                        disabled={actionLoading}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 disabled:opacity-40"
+                        aria-label={`Fshi porosinë e ${order.full_name}`}
+                        title="Fshi"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
 
                   <p className="mt-4 line-clamp-2 break-words text-sm font-semibold leading-5 text-zinc-800">
@@ -1128,6 +1342,104 @@ export default function AdminOrders() {
                 Mbyll
               </button>
             </footer>
+          </div>
+        </div>
+      )}
+
+      {/* REJECTION MODAL */}
+      {rejectingOrder && (
+        <div
+          className="fixed inset-0 z-[140] flex items-end justify-center bg-zinc-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+          onClick={() => {
+            if (!actionLoading) {
+              setRejectingOrder(null);
+              setRejectionReason("");
+            }
+          }}
+        >
+          <div
+            className="w-full rounded-t-[28px] bg-white p-6 shadow-2xl sm:max-w-lg sm:rounded-[28px]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">
+                  Refuzimi i kërkesës
+                </p>
+                <h2 className="mt-1 font-serif text-2xl font-bold text-zinc-950">
+                  Refuzo porosinë
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={() => {
+                  setRejectingOrder(null);
+                  setRejectionReason("");
+                }}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-700 hover:bg-zinc-200 disabled:opacity-50"
+                aria-label="Mbyll"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
+              <p className="text-xs text-zinc-500">Studenti</p>
+              <p className="mt-1 font-bold text-zinc-900">
+                {rejectingOrder.full_name}
+              </p>
+              <p className="mt-1 text-xs text-zinc-500">
+                {rejectingOrder.email}
+              </p>
+
+              <p className="mt-4 text-xs text-zinc-500">Kërkesa</p>
+              <p className="mt-1 text-sm font-semibold text-zinc-800">
+                {rejectingOrder.topic ||
+                  rejectingOrder.work_type ||
+                  "Pa temë të specifikuar"}
+              </p>
+            </div>
+
+            <label className="mt-5 block text-xs font-bold text-zinc-700">
+              Arsyeja e refuzimit
+            </label>
+            <textarea
+              value={rejectionReason}
+              onChange={(event) => setRejectionReason(event.target.value)}
+              rows={5}
+              maxLength={1000}
+              placeholder="P.sh. Për momentin nuk kemi mundësi ta realizojmë këtë punim brenda afatit të kërkuar."
+              className="mt-2 w-full resize-none rounded-xl border border-orange-200 bg-white px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+            />
+            <p className="mt-2 text-right text-[10px] text-zinc-400">
+              {rejectionReason.length}/1000
+            </p>
+
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={() => {
+                  setRejectingOrder(null);
+                  setRejectionReason("");
+                }}
+                className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+              >
+                Anulo
+              </button>
+
+              <button
+                type="button"
+                onClick={rejectOrder}
+                disabled={actionLoading || !rejectionReason.trim()}
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Ban className="h-4 w-4" />
+                {actionLoading ? "Duke refuzuar..." : "Refuzo dhe dërgo email"}
+              </button>
+            </div>
           </div>
         </div>
       )}
