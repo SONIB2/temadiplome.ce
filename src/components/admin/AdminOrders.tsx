@@ -249,44 +249,96 @@ export default function AdminOrders() {
     });
   };
 
-  const saveSelected = async () => {
-    if (!selected) return;
+const saveSelected = async () => {
+  if (!selected) return;
 
-    setSaving(true);
-    setMessage("");
+  setSaving(true);
+  setMessage("");
 
-    const { error } = await supabase
-      .from("orders")
-      .update({
-        order_status: selected.order_status || "received",
-        admin_note: selected.admin_note || "",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", selected.id);
+  const existingOrder = orders.find((order) => order.id === selected.id);
 
-    if (error) {
-      console.error("Order update error:", error);
-      setMessage("Statusi nuk u ruajt.");
-      setSaving(false);
-      return;
-    }
+  const previousStatus = existingOrder?.order_status || "received";
+  const newStatus = selected.order_status || "received";
+  const statusChanged = previousStatus !== newStatus;
 
-    setOrders((previous) =>
-      previous.map((order) =>
-        order.id === selected.id
-          ? {
-              ...order,
-              order_status: selected.order_status,
-              admin_note: selected.admin_note,
-            }
-          : order
-      )
+  const now = new Date().toISOString();
+
+  const { error: updateError } = await supabase
+    .from("orders")
+    .update({
+      order_status: newStatus,
+      admin_note: selected.admin_note || "",
+      updated_at: now,
+    })
+    .eq("id", selected.id);
+
+  if (updateError) {
+    console.error("Order update error:", updateError);
+    setMessage("Statusi nuk u ruajt.");
+    setSaving(false);
+    return;
+  }
+
+  let emailError: unknown = null;
+
+  if (statusChanged && newStatus !== "rejected") {
+    const { error } = await supabase.functions.invoke(
+      "send-order-status-update",
+      {
+        body: {
+          orderId: selected.id,
+          fullName: selected.full_name,
+          email: selected.email,
+          topic:
+            selected.topic ||
+            selected.work_type ||
+            "Kërkesa juaj",
+          previousStatus,
+          status: newStatus,
+          adminNote: selected.admin_note || "",
+        },
+      }
     );
 
-    setMessage("Statusi u përditësua me sukses.");
-    setSaving(false);
+    emailError = error;
+
+    if (error) {
+      console.error("Status email error:", error);
+    }
+  }
+
+  const updatedOrder: Order = {
+    ...selected,
+    order_status: newStatus,
+    admin_note: selected.admin_note || "",
   };
 
+  setSelected(updatedOrder);
+
+  setOrders((previous) =>
+    previous.map((order) =>
+      order.id === selected.id ? updatedOrder : order
+    )
+  );
+
+  if (!statusChanged) {
+    setMessage("Shënimi u ruajt me sukses.");
+  } else if (newStatus === "rejected") {
+    setMessage(
+      "Statusi u ruajt. Për refuzimin përdor butonin Refuzo që të dërgohet edhe arsyeja."
+    );
+  } else if (emailError) {
+    setMessage(
+      "Statusi u përditësua, por email-i nuk u dërgua."
+    );
+  } else {
+    setMessage(
+      "Statusi u përditësua dhe studenti u njoftua me email."
+    );
+  }
+
+  setSaving(false);
+};
   const rejectOrder = async () => {
   if (!rejectingOrder) return;
 
