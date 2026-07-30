@@ -272,12 +272,15 @@ const saveSelected = async () => {
     })
     .eq("id", selected.id);
 
-  if (updateError) {
-    console.error("Order update error:", updateError);
-    setMessage("Statusi nuk u ruajt.");
-    setSaving(false);
-    return;
-  }
+ if (updateError) {
+  console.error("UPDATE ERROR:", updateError);
+
+  alert(JSON.stringify(updateError, null, 2));
+
+  setMessage("Statusi nuk u ruajt.");
+  setSaving(false);
+  return;
+}
 
   let emailError: unknown = null;
 
